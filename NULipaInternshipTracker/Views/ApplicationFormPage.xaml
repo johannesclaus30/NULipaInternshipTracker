@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NULipaInternshipTracker.Views.ApplicationFormPage"
+             BackgroundColor="#F4F6F9"
+             Shell.NavBarIsVisible="False">
+
+    <ContentPage.Resources>
+        <!-- Fix Entry/Editor focus and placeholder visibility -->
+        <Style TargetType="Entry">
+            <Setter Property="BackgroundColor" Value="Transparent" />
+            <Setter Property="TextColor" Value="#32418c" />
+            <Setter Property="PlaceholderColor" Value="#94A3B8" />
+        </Style>
+        <Style TargetType="Picker">
+            <Setter Property="BackgroundColor" Value="Transparent" />
+            <Setter Property="TextColor" Value="#32418c" />
+            <Setter Property="TitleColor" Value="#94A3B8" />
+        </Style>
+        <Style TargetType="Editor">
+            <Setter Property="BackgroundColor" Value="Transparent" />
+            <Setter Property="TextColor" Value="#32418c" />
+            <Setter Property="PlaceholderColor" Value="#94A3B8" />
+        </Style>
+    </ContentPage.Resources>
+
+    <ScrollView Padding="20, 24, 20, 30">
+        <VerticalStackLayout Spacing="16">
+
+            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12" Margin="0, 0, 0, 10">
+                <Button Grid.Column="0" Text="←" FontFamily="MontserratBold" FontSize="18" TextColor="#32418c" BackgroundColor="#FFFFFF" HeightRequest="42" WidthRequest="42" CornerRadius="12" Padding="0" Clicked="OnCancelClicked">
+                    <Button.Shadow>
+                        <Shadow Brush="Black" Offset="0,4" Radius="10" Opacity="0.05" />
+                    </Button.Shadow>
+                </Button>
+                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                    <Label Text="APPLICATION FORM" FontFamily="MontserratBold" FontSize="10" TextColor="#fbd117" CharacterSpacing="1.2" />
+                    <Label x:Name="lblHeader" Text="Log Internship" FontFamily="MontserratBold" FontSize="20" TextColor="#32418c" />
+                </VerticalStackLayout>
+            </Grid>
+
+            <!-- Basic Fields -->
+            <VerticalStackLayout Spacing="6">
+                <Label Text="Company / Partner Host *" FontFamily="MontserratSemiBold" FontSize="12" TextColor="#475569" />
+                <Border BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="12, 4" StrokeShape="RoundRectangle 12">
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Offset="0,2" Radius="6" Opacity="0.04" />
+                    </Border.Shadow>
+                    <Entry x:Name="entryCompany" Placeholder="e.g. Canva, Accenture" FontFamily="MontserratRegular" FontSize="14" />
+                </Border>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="6">
+                <Label Text="Internship Role *" FontFamily="MontserratSemiBold" FontSize="12" TextColor="#475569" />
+                <Border BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="12, 4" StrokeShape="RoundRectangle 12">
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Offset="0,2" Radius="6" Opacity="0.04" />
+                    </Border.Shadow>
+                    <Entry x:Name="entryRole" Placeholder="e.g. Developer Intern" FontFamily="MontserratRegular" FontSize="14" />
+                </Border>
+            </VerticalStackLayout>
+
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+                <VerticalStackLayout Grid.Column="0" Spacing="6">
+                    <Label Text="Stage" FontFamily="MontserratSemiBold" FontSize="12" TextColor="#475569" />
+                    <Border BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="10, 2" StrokeShape="RoundRectangle 12">
+                        <Border.Shadow>
+                            <Shadow Brush="Black" Offset="0,2" Radius="6" Opacity="0.04" />
+                        </Border.Shadow>
+                        <Picker x:Name="pickerStage" FontFamily="MontserratRegular" FontSize="13">
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type x:String}">
+                                    <x:String>Applied</x:String>
+                                    <x:String>Interview</x:String>
+                                    <x:String>Offer / MOA</x:String>
+                                    <x:String>Rejected</x:String>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                        </Picker>
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="1" Spacing="6">
+                    <Label Text="Work Setup" FontFamily="MontserratSemiBold" FontSize="12" TextColor="#475569" />
+                    <Border BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="10, 2" StrokeShape="RoundRectangle 12">
+                        <Border.Shadow>
+                            <Shadow Brush="Black" Offset="0,2" Radius="6" Opacity="0.04" />
+                        </Border.Shadow>
+                        <Picker x:Name="pickerSetup" FontFamily="MontserratRegular" FontSize="13">
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type x:String}">
+                                    <x:String>Remote</x:String>
+                                    <x:String>Hybrid</x:String>
+                                    <x:String>Onsite</x:String>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                        </Picker>
+                    </Border>
+                </VerticalStackLayout>
+            </Grid>
+
+            <!-- Smart Stipend Field -->
+            <VerticalStackLayout Spacing="8">
+                <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                    <Label Text="Daily Stipend" FontFamily="MontserratSemiBold" FontSize="12" TextColor="#475569" VerticalOptions="Center" />
+                    <!-- Toggle Switch -->
+                    <Switch x:Name="switchUnpaid" OnColor="#32418c" Toggled="OnUnpaidToggled" Scale="0.8" />
+                    <Label Text="No Allowance" FontFamily="MontserratMedium" FontSize="11" TextColor="#64748B" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+
+                <Border x:Name="borderSalary" BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="12, 4" StrokeShape="RoundRectangle 12">
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Offset="0,2" Radius="6" Opacity="0.04" />
+                    </Border.Shadow>
+                    <Grid ColumnDefinitions="Auto, *">
+                        <Label Text="Php" FontFamily="MontserratBold" FontSize="14" TextColor="#32418c" VerticalOptions="Center" Margin="0,0,8,0" />
+                        <Entry Grid.Column="1" x:Name="entrySalary" Keyboard="Numeric" Placeholder="e.g. 350" FontFamily="MontserratRegular" FontSize="14" />
+                    </Grid>
+                </Border>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="6">
+                <Label Text="Application Date" FontFamily="MontserratSemiBold" FontSize="12" TextColor="#475569" />
+                <Border BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="12, 4" StrokeShape="RoundRectangle 12">
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Offset="0,2" Radius="6" Opacity="0.04" />
+                    </Border.Shadow>
+                    <DatePicker x:Name="datePickerApp" Format="yyyy-MM-dd" FontFamily="MontserratRegular" FontSize="14" TextColor="#32418c" />
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- RESTORED: Notes Editor (Needed for C# code-behind) -->
+            <VerticalStackLayout Spacing="6">
+                <Label Text="Requirements &amp; Endorsement Notes" FontFamily="MontserratSemiBold" FontSize="12" TextColor="#475569" />
+                <Border BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="12, 8" StrokeShape="RoundRectangle 12">
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Offset="0,2" Radius="6" Opacity="0.04" />
+                    </Border.Shadow>
+                    <Editor x:Name="editorNotes" Placeholder="Resume sent, MOA endorsement letter status..." AutoSize="TextChanges" HeightRequest="80" FontFamily="MontserratRegular" FontSize="14" />
+                </Border>
+            </VerticalStackLayout>
+
+            <Button Text="Save Application" FontFamily="MontserratBold" FontSize="14" BackgroundColor="#32418c" TextColor="#FFFFFF" CornerRadius="14" HeightRequest="52" Clicked="OnSaveClicked" Margin="0, 14, 0, 0">
+                <Button.Shadow>
+                    <Shadow Brush="#32418c" Offset="0,4" Radius="12" Opacity="0.3" />
+                </Button.Shadow>
+            </Button>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

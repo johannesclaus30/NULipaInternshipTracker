@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:NULipaInternshipTracker.Models"
+             x:Class="NULipaInternshipTracker.MainPage"
+             BackgroundColor="#F4F6F9"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto, Auto, Auto, *" Padding="20, 24, 20, 16" RowSpacing="20">
+
+        <!-- Header -->
+        <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto, Auto" ColumnSpacing="12" VerticalOptions="Center">
+            <!-- Back Button to Profile -->
+            <Button Grid.Column="0" Text="←" FontFamily="MontserratBold" FontSize="18" TextColor="#32418c" BackgroundColor="Transparent" Padding="0" WidthRequest="30" Clicked="OnBackToProfileClicked" />
+
+            <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
+                <Label Text="CAREER PORTAL" FontFamily="MontserratBold" FontSize="10" TextColor="#fbd117" CharacterSpacing="1.2" />
+                <Label Text="OJT Tracker" FontFamily="MontserratBold" FontSize="22" TextColor="#32418c" />
+            </VerticalStackLayout>
+
+            <Button Grid.Column="2" Text="🔄" FontSize="14" BackgroundColor="#FFFFFF" TextColor="#32418c" CornerRadius="12" HeightRequest="42" WidthRequest="42" Padding="0" Command="{Binding RefreshCommand}">
+                <Button.Shadow>
+                    <Shadow Brush="Black" Offset="0,4" Radius="10" Opacity="0.05" />
+                </Button.Shadow>
+            </Button>
+
+            <Button Grid.Column="3" Text="+ New Log" FontFamily="MontserratSemiBold" FontSize="12" BackgroundColor="#32418c" TextColor="#FFFFFF" CornerRadius="12" HeightRequest="42" Padding="14, 0" Command="{Binding AddCommand}">
+                <Button.Shadow>
+                    <Shadow Brush="#32418c" Offset="0,4" Radius="12" Opacity="0.3" />
+                </Button.Shadow>
+            </Button>
+        </Grid>
+
+        <!-- Metric Stat Cards -->
+        <Grid Grid.Row="1" ColumnDefinitions="*, *" ColumnSpacing="16">
+            <!-- Applications Card -->
+            <Border Grid.Column="0" BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="16, 16" StrokeShape="RoundRectangle 16">
+                <Border.Shadow>
+                    <Shadow Brush="Black" Offset="0,6" Radius="14" Opacity="0.06" />
+                </Border.Shadow>
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="TOTAL APPLIED" FontFamily="MontserratSemiBold" FontSize="10" TextColor="#64748B" CharacterSpacing="0.8" />
+                    <Label Text="{Binding TotalApplied}" FontFamily="MontserratBold" FontSize="32" TextColor="#32418c" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Interviews Card -->
+            <Border Grid.Column="1" BackgroundColor="#32418c" StrokeThickness="0" Padding="16, 16" StrokeShape="RoundRectangle 16">
+                <Border.Shadow>
+                    <Shadow Brush="#32418c" Offset="0,6" Radius="14" Opacity="0.25" />
+                </Border.Shadow>
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="INTERVIEWS" FontFamily="MontserratSemiBold" FontSize="10" TextColor="#D4E2EE" CharacterSpacing="0.8" />
+                    <Label Text="{Binding InterviewsSecured}" FontFamily="MontserratBold" FontSize="32" TextColor="#fbd117" />
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+
+        <!-- Search Bar -->
+        <Border Grid.Row="2" BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="6, 2" StrokeShape="RoundRectangle 14">
+            <Border.Shadow>
+                <Shadow Brush="Black" Offset="0,4" Radius="10" Opacity="0.04" />
+            </Border.Shadow>
+            <SearchBar Placeholder="Search company or role..." PlaceholderColor="#94A3B8" TextColor="#32418c" FontFamily="MontserratRegular" FontSize="13" BackgroundColor="Transparent" TextChanged="OnSearchTextChanged" />
+        </Border>
+
+        <!-- Dynamic Feed -->
+        <CollectionView Grid.Row="3" ItemsSource="{Binding Applications}" SelectionMode="None" >
+            <CollectionView.EmptyView>
+                <VerticalStackLayout Spacing="8" HorizontalOptions="Center" VerticalOptions="Center" Padding="0, 50, 0, 0">
+                    <Label Text="No applications logged" FontFamily="MontserratSemiBold" FontSize="15" TextColor="#64748B" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:JobApplication">
+                    <VerticalStackLayout Margin="0, 14">
+                        <Border Margin="0, 0, 0, 14" Padding="18" BackgroundColor="#FFFFFF" StrokeThickness="0" StrokeShape="RoundRectangle 16">
+                            <Border.Shadow>
+                                <Shadow Brush="Black" Offset="0,6" Radius="16" Opacity="0.05" />
+                            </Border.Shadow>
+                            <Grid RowDefinitions="Auto, Auto, Auto" RowSpacing="4">
+
+                                <!-- Top Row -->
+                                <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
+                                    <Label Grid.Column="0" Text="{Binding CompanyName}" FontFamily="MontserratBold" FontSize="17" TextColor="#32418c" />
+                                    <Border Grid.Column="1" BackgroundColor="#F0F4FA" StrokeThickness="0" Padding="12, 4" StrokeShape="RoundRectangle 20">
+                                        <Label Text="{Binding Stage}" FontFamily="MontserratSemiBold" FontSize="10" TextColor="#32418c" />
+                                    </Border>
+                                </Grid>
+
+                                <!-- Middle Row -->
+                                <VerticalStackLayout Grid.Row="1" Spacing="4">
+                                    <Label Text="{Binding RoleTitle}" FontFamily="MontserratMedium" FontSize="14" TextColor="#334155" />
+                                    <HorizontalStackLayout Spacing="8">
+                                        <Label Text="{Binding WorkSetup}" FontFamily="MontserratRegular" FontSize="12" TextColor="#64748B" />
+                                        <Label Text="•" TextColor="#CBD5E1" FontSize="12" />
+                                        <Label Text="{Binding ExpectedSalary}" FontFamily="MontserratBold" FontSize="12" TextColor="#fbd117" />
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+
+                                <!-- Bottom Row -->
+                                <Grid Grid.Row="2" ColumnDefinitions="*, Auto, Auto" ColumnSpacing="8" VerticalOptions="Center" Margin="0, 8, 0, 0">
+                                    <Label Grid.Column="0" Text="{Binding ApplicationDate, StringFormat='Applied: {0}'}" FontFamily="MontserratMedium" FontSize="11" TextColor="#94A3B8" VerticalOptions="Center" />
+                                    <Button Grid.Column="1" Text="Edit" FontFamily="MontserratSemiBold" FontSize="11" BackgroundColor="#F4F6F9" TextColor="#32418c" CornerRadius="8" HeightRequest="32" Padding="14, 0" Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditCommand}" CommandParameter="{Binding .}" />
+                                    <Button Grid.Column="2" Text="Delete" FontFamily="MontserratSemiBold" FontSize="11" BackgroundColor="#FEE2E2" TextColor="#DC2626" CornerRadius="8" HeightRequest="32" Padding="14, 0" Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteCommand}" CommandParameter="{Binding .}" />
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>
