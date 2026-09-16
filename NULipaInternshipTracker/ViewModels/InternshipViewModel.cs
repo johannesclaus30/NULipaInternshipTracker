@@ -39,6 +39,13 @@ public class InternshipViewModel : INotifyPropertyChanged
         set { _interviewsSecured = value; Notify(); }
     }
 
+    private int _offersAccepted;
+    public int OffersAccepted
+    {
+        get => _offersAccepted;
+        set { _offersAccepted = value; Notify(); }
+    }
+
     private string _currentSearchQuery = string.Empty;
     private string _selectedStage = "All";
 
@@ -47,11 +54,13 @@ public class InternshipViewModel : INotifyPropertyChanged
     public ICommand AddCommand { get; }
     public ICommand EditCommand { get; }
     public ICommand DeleteCommand { get; }
+    public ICommand AcceptOfferCommand { get; }
 
     public InternshipViewModel(ApiService api)
     {
         _api = api;
 
+        // All commands initialized inside the constructor
         RefreshCommand = new Command(async () => await LoadDataAsync());
         AddCommand = new Command(async () => await Shell.Current.GoToAsync("ApplicationFormPage"));
         EditCommand = new Command<JobApplication>(async (item) =>
@@ -60,6 +69,7 @@ public class InternshipViewModel : INotifyPropertyChanged
                 await Shell.Current.GoToAsync($"ApplicationFormPage?appId={item.Id}");
         });
         DeleteCommand = new Command<JobApplication>(async (item) => await ConfirmDeleteAsync(item));
+        AcceptOfferCommand = new Command<JobApplication>(async (item) => await OnAcceptOfferAsync(item));
     }
 
     public async Task LoadDataAsync()
@@ -69,7 +79,7 @@ public class InternshipViewModel : INotifyPropertyChanged
         try
         {
             IsBusy = true;
-            var list = await _api.GetAllAsync(); // or your ApiService method name
+            var list = await _api.GetAllAsync();
 
             _masterList.Clear();
             if (list != null)
@@ -90,15 +100,6 @@ public class InternshipViewModel : INotifyPropertyChanged
         }
     }
 
-    // Inside ViewModels/InternshipViewModel.cs
-
-    private int _offersAccepted;
-    public int OffersAccepted
-    {
-        get => _offersAccepted;
-        set { _offersAccepted = value; Notify(); }
-    }
-
     private void UpdateStats()
     {
         TotalApplied = _masterList.Count;
@@ -107,11 +108,10 @@ public class InternshipViewModel : INotifyPropertyChanged
             !string.IsNullOrEmpty(a.Stage) &&
             a.Stage.Equals("Interview", StringComparison.OrdinalIgnoreCase));
 
-        // Count accepted / offer stage
+        // Count only the accepted applications
         OffersAccepted = _masterList.Count(a =>
             !string.IsNullOrEmpty(a.Stage) &&
-            (a.Stage.Equals("Accepted", StringComparison.OrdinalIgnoreCase) ||
-             a.Stage.Equals("Offer / MOA", StringComparison.OrdinalIgnoreCase)));
+            a.Stage.Equals("Accepted", StringComparison.OrdinalIgnoreCase));
     }
 
     public void Filter(string query)
@@ -164,7 +164,7 @@ public class InternshipViewModel : INotifyPropertyChanged
 
         if (!confirm) return;
 
-        bool success = await _api.DeleteAsync(item.Id);
+        bool success = await _api.DeleteAsync(item.Id); // Week 10 DELETE pattern
         if (success)
         {
             _masterList.Remove(item);
@@ -174,6 +174,40 @@ public class InternshipViewModel : INotifyPropertyChanged
         else
         {
             await Application.Current.MainPage.DisplayAlert("Error", "Failed to delete record.", "OK");
+        }
+    }
+
+    private async Task OnAcceptOfferAsync(JobApplication? item)
+    {
+        if (item == null) return;
+
+        bool confirm = await Application.Current!.MainPage!.DisplayAlert(
+            "Accept Internship Offer",
+            $"Congratulations! Do you want to accept the offer from {item.CompanyName} and mark it as Accepted?",
+            "Yes, Accept!", "Cancel");
+
+        if (!confirm) return;
+
+        // Update stage in memory
+        item.Stage = "Accepted";
+
+        // Send PUT request to PHP update.php (Week 10 lesson pattern)
+        bool success = await _api.UpdateAsync(item.Id, item);
+
+        if (success)
+        {
+            UpdateStats();
+            ApplyFilters();
+            await Application.Current.MainPage.DisplayAlert(
+                "Offer Accepted! 🎉",
+                $"Your offer from {item.CompanyName} has been logged as Accepted.",
+                "OK");
+        }
+        else
+        {
+            // Revert back if backend failed
+            item.Stage = "Offer / MOA";
+            await Application.Current.MainPage.DisplayAlert("Error", "Failed to update status on server.", "OK");
         }
     }
 }

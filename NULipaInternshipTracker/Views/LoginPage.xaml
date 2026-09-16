@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NULipaInternshipTracker.Views.LoginPage"
+             BackgroundColor="#F8FAFC"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto, *">
+
+        <!-- Top NU Blue Curved Header -->
+        <Border Grid.Row="0" 
+                BackgroundColor="#32418c" 
+                StrokeThickness="0" 
+                Margin="0, 0, 0, -40"
+                StrokeShape="RoundRectangle 0, 0, 36, 36"
+                Padding="20, 36, 20, 60">
+
+            <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
+                <Border WidthRequest="74" HeightRequest="74" 
+                        Stroke="#fbd117" StrokeThickness="3" 
+                        BackgroundColor="#FFFFFF" 
+                        StrokeShape="RoundRectangle 37"
+                        HorizontalOptions="Center">
+                    <Label Text="🎓" FontSize="36" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+
+                <Label Text="CAREER SERVICES" 
+                       FontFamily="MontserratBold" 
+                       FontSize="11" 
+                       TextColor="#fbd117" 
+                       CharacterSpacing="1.5" 
+                       HorizontalOptions="Center" />
+
+                <Label Text="NU Lipa Portal" 
+                       FontFamily="MontserratBold" 
+                       FontSize="26" 
+                       TextColor="#FFFFFF" 
+                       HorizontalOptions="Center" />
+
+                <Label Text="BS Information Technology • Internship System" 
+                       FontFamily="MontserratMedium" 
+                       FontSize="11" 
+                       TextColor="#D4E2EE" 
+                       HorizontalOptions="Center" />
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Floating Form Card -->
+        <ScrollView Grid.Row="1" Margin="20, 0, 20, 20">
+            <VerticalStackLayout Spacing="16">
+
+                <Border BackgroundColor="#FFFFFF" 
+                        StrokeThickness="0" 
+                        StrokeShape="RoundRectangle 22" 
+                        Padding="20, 24">
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Offset="0, 8" Radius="18" Opacity="0.08" />
+                    </Border.Shadow>
+
+                    <VerticalStackLayout Spacing="14">
+
+                        <!-- Mode Selector: Student vs Corporate -->
+                        <Border BackgroundColor="#F1F5F9" StrokeThickness="0" StrokeShape="RoundRectangle 12" Padding="4">
+                            <Grid ColumnDefinitions="*, *">
+                                <Button x:Name="btnTabStudent" 
+                                        Text="Student" 
+                                        FontFamily="MontserratBold" 
+                                        FontSize="12" 
+                                        BackgroundColor="#32418c" 
+                                        TextColor="#FFFFFF" 
+                                        CornerRadius="10" 
+                                        HeightRequest="36" 
+                                        Clicked="OnStudentTabClicked" />
+
+                                <Button x:Name="btnTabAdmin" 
+                                        Grid.Column="1" 
+                                        Text="Company Host" 
+                                        FontFamily="MontserratBold" 
+                                        FontSize="12" 
+                                        BackgroundColor="Transparent" 
+                                        TextColor="#64748B" 
+                                        CornerRadius="10" 
+                                        HeightRequest="36" 
+                                        Clicked="OnAdminTabClicked" />
+                            </Grid>
+                        </Border>
+
+                        <!-- Company Name (Company Sign-Up Only) -->
+                        <VerticalStackLayout x:Name="layoutCompanyName" Spacing="4" IsVisible="False">
+                            <Label Text="Registered Company Name" FontFamily="MontserratSemiBold" FontSize="11" TextColor="#32418c" />
+                            <Border BackgroundColor="#F8FAFC" Stroke="#CBD5E1" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="12, 0">
+                                <Entry x:Name="entryCompanyName" 
+                                       Placeholder="e.g. SM Prime Holdings, Inc." 
+                                       PlaceholderColor="#94A3B8" 
+                                       BackgroundColor="Transparent" 
+                                       FontFamily="MontserratRegular" 
+                                       FontSize="13" 
+                                       TextColor="#1E293B" 
+                                       HeightRequest="42" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Name Field (Visible on Register) -->
+                        <VerticalStackLayout x:Name="layoutName" Spacing="4" IsVisible="False">
+                            <Label x:Name="lblNameTitle" Text="Full Name" FontFamily="MontserratSemiBold" FontSize="11" TextColor="#32418c" />
+                            <Border BackgroundColor="#F8FAFC" Stroke="#CBD5E1" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="12, 0">
+                                <Entry x:Name="entryName" 
+                                       Placeholder="e.g. Juan Dela Cruz" 
+                                       PlaceholderColor="#94A3B8" 
+                                       BackgroundColor="Transparent" 
+                                       FontFamily="MontserratRegular" 
+                                       FontSize="13" 
+                                       TextColor="#1E293B" 
+                                       HeightRequest="42" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Email Field -->
+                        <VerticalStackLayout Spacing="4">
+                            <Label x:Name="lblEmailTitle" Text="Student Email" FontFamily="MontserratSemiBold" FontSize="11" TextColor="#32418c" />
+                            <Border BackgroundColor="#F8FAFC" Stroke="#CBD5E1" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="12, 0">
+                                <Entry x:Name="entryEmail" 
+                                       Placeholder="student@nulipa.edu.ph" 
+                                       PlaceholderColor="#94A3B8" 
+                                       BackgroundColor="Transparent" 
+                                       Keyboard="Email" 
+                                       FontFamily="MontserratRegular" 
+                                       FontSize="13" 
+                                       TextColor="#1E293B" 
+                                       HeightRequest="42" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Password Field -->
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Password" FontFamily="MontserratSemiBold" FontSize="11" TextColor="#32418c" />
+                            <Border BackgroundColor="#F8FAFC" Stroke="#CBD5E1" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="12, 0">
+                                <Entry x:Name="entryPassword" 
+                                       IsPassword="True" 
+                                       Placeholder="••••••••" 
+                                       PlaceholderColor="#94A3B8" 
+                                       BackgroundColor="Transparent" 
+                                       FontFamily="MontserratRegular" 
+                                       FontSize="13" 
+                                       TextColor="#1E293B" 
+                                       HeightRequest="42" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Submit Action Button -->
+                        <Button x:Name="btnSubmit" 
+                                Text="Sign In" 
+                                FontFamily="MontserratBold" 
+                                FontSize="13" 
+                                BackgroundColor="#fbd117" 
+                                TextColor="#32418c" 
+                                CornerRadius="12" 
+                                HeightRequest="46" 
+                                Margin="0, 6, 0, 0" 
+                                Clicked="OnSubmitClicked">
+                            <Button.Shadow>
+                                <Shadow Brush="#fbd117" Offset="0, 3" Radius="8" Opacity="0.35" />
+                            </Button.Shadow>
+                        </Button>
+
+                        <!-- Mode Toggle Button -->
+                        <Button x:Name="btnToggleRegister" 
+                                Text="Need an account? Register here" 
+                                FontFamily="MontserratMedium" 
+                                FontSize="11" 
+                                TextColor="#32418c" 
+                                BackgroundColor="Transparent" 
+                                Clicked="OnToggleRegisterModeClicked" />
+
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Demo helper -->
+                <Border BackgroundColor="#FEF9C3" Stroke="#FDE047" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="12, 10">
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="💡 Evaluation Accounts" FontFamily="MontserratBold" FontSize="10" TextColor="#854D0E" />
+                        <Label Text="Student: student@nulipa.edu.ph (student123)" FontFamily="MontserratRegular" FontSize="9" TextColor="#713F12" />
+                        <Label Text="Company: recruiter@smprime.com (smprime123)" FontFamily="MontserratRegular" FontSize="9" TextColor="#713F12" />
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

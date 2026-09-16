@@ -94,13 +94,16 @@
             </VerticalStackLayout>
 
             <!-- Basic Fields -->
-            <VerticalStackLayout Spacing="6">
-                <Label Text="Company / Partner Host *" FontFamily="MontserratSemiBold" FontSize="12" TextColor="#475569" />
-                <Border BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="12, 4" StrokeShape="RoundRectangle 12">
-                    <Border.Shadow>
-                        <Shadow Brush="Black" Offset="0,2" Radius="6" Opacity="0.04" />
-                    </Border.Shadow>
-                    <Entry x:Name="entryCompany" Placeholder="e.g. Canva, Accenture" FontFamily="MontserratRegular" FontSize="14" />
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Select Company Partner *" FontFamily="MontserratSemiBold" FontSize="11" TextColor="#32418c" />
+                <Border BackgroundColor="#F8FAFC" Stroke="#CBD5E1" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="8, 0">
+                    <Picker x:Name="pickerCompany" 
+                            Title="Choose registered company..." 
+                            ItemDisplayBinding="{Binding Name}" 
+                            FontFamily="MontserratMedium" 
+                            FontSize="13" 
+                            TextColor="#1E293B" 
+                            HeightRequest="42" />
                 </Border>
             </VerticalStackLayout>
 

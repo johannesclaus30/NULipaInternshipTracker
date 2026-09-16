@@ -1,17 +1,13 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using NULipaInternshipTracker.Services;
+using NULipaInternshipTracker.Views;
 
-namespace NULipaInternshipTracker
+namespace NULipaInternshipTracker;
+
+public partial class App : Application
 {
-    public partial class App : Application
+    public App(ApiService api)
     {
-        public App()
-        {
-            InitializeComponent();
-        }
-
-        protected override Window CreateWindow(IActivationState? activationState)
-        {
-            return new Window(new AppShell());
-        }
+        InitializeComponent();
+        MainPage = new LoginPage(api);
     }
 }

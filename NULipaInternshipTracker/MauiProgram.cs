@@ -37,6 +37,9 @@ public static class MauiProgram
             Timeout = TimeSpan.FromSeconds(30)
         });
 
+        builder.Services.AddSingleton<Views.LoginPage>();
+        builder.Services.AddTransient<Views.ProfilePage>();
+        builder.Services.AddTransient<Views.CompanyDashboardPage>();
         builder.Services.AddSingleton<ApiService>();
         builder.Services.AddTransient<InternshipViewModel>();
         builder.Services.AddTransient<MainPage>();

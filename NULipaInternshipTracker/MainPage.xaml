@@ -11,23 +11,32 @@
           RowSpacing="14">
 
         <!-- 1. Header Bar -->
-        <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto, Auto" ColumnSpacing="10" VerticalOptions="Center">
-            <Button Grid.Column="0" Text="←" FontFamily="MontserratBold" FontSize="18" TextColor="#32418c" BackgroundColor="Transparent" Padding="0" WidthRequest="32" Clicked="OnBackToProfileClicked" />
+        <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto, Auto, Auto" ColumnSpacing="8" VerticalOptions="Center">
+            <Button Grid.Column="0" Text="←" FontFamily="MontserratBold" FontSize="18" TextColor="#32418c" BackgroundColor="Transparent" Padding="0" WidthRequest="28" Clicked="OnBackToProfileClicked" />
 
             <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
                 <Label Text="CAREER PORTAL" FontFamily="MontserratBold" FontSize="9" TextColor="#fbd117" CharacterSpacing="1.2" />
                 <Label Text="OJT Tracker" FontFamily="MontserratBold" FontSize="20" TextColor="#32418c" />
             </VerticalStackLayout>
 
+            <!-- Refresh Button -->
             <Button Grid.Column="2" Text="🔄" FontSize="13" BackgroundColor="#FFFFFF" TextColor="#32418c" CornerRadius="10" HeightRequest="38" WidthRequest="38" Padding="0" Command="{Binding RefreshCommand}">
                 <Button.Shadow>
                     <Shadow Brush="Black" Offset="0,3" Radius="8" Opacity="0.05" />
                 </Button.Shadow>
             </Button>
 
-            <Button Grid.Column="3" Text="+ New" FontFamily="MontserratSemiBold" FontSize="12" BackgroundColor="#32418c" TextColor="#FFFFFF" CornerRadius="10" HeightRequest="38" Padding="14, 0" Command="{Binding AddCommand}">
+            <!-- + New Application Button -->
+            <Button Grid.Column="3" Text="+ New" FontFamily="MontserratSemiBold" FontSize="12" BackgroundColor="#32418c" TextColor="#FFFFFF" CornerRadius="10" HeightRequest="38" Padding="12, 0" Command="{Binding AddCommand}">
                 <Button.Shadow>
                     <Shadow Brush="#32418c" Offset="0,3" Radius="10" Opacity="0.25" />
+                </Button.Shadow>
+            </Button>
+
+            <!-- Profile & Settings Button -->
+            <Button Grid.Column="4" Text="👤" FontSize="15" BackgroundColor="#fbd117" TextColor="#32418c" CornerRadius="10" HeightRequest="38" WidthRequest="38" Padding="0" Clicked="OnProfileClicked">
+                <Button.Shadow>
+                    <Shadow Brush="#fbd117" Offset="0,3" Radius="8" Opacity="0.35" />
                 </Button.Shadow>
             </Button>
         </Grid>
@@ -242,32 +251,54 @@
                                     </Grid>
                                 </Border>
 
-                                <!-- Row 4: Edit & Delete Buttons -->
-                                <Grid Grid.Row="4" ColumnDefinitions="*, *" ColumnSpacing="6" Margin="0, 4, 0, 2">
-                                    <Button Grid.Column="0" 
-                                            Text="Edit" 
-                                            FontFamily="MontserratSemiBold" 
-                                            FontSize="10" 
-                                            BackgroundColor="#F4F6F9" 
-                                            TextColor="#32418c" 
-                                            CornerRadius="8" 
-                                            HeightRequest="28" 
-                                            Padding="0" 
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditCommand}" 
-                                            CommandParameter="{Binding .}" />
+                                <!-- Row 4: Action Buttons (With Dynamic Accept Button for Offers) -->
+                                <VerticalStackLayout Grid.Row="4" Spacing="6" Margin="0, 4, 0, 2">
 
-                                    <Button Grid.Column="1" 
-                                            Text="Del" 
-                                            FontFamily="MontserratSemiBold" 
-                                            FontSize="10" 
-                                            BackgroundColor="#FEE2E2" 
-                                            TextColor="#DC2626" 
-                                            CornerRadius="8" 
-                                            HeightRequest="28" 
-                                            Padding="0" 
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteCommand}" 
-                                            CommandParameter="{Binding .}" />
-                                </Grid>
+                                    <!-- 1. Accept Button (ONLY visible when Stage == 'Offer / MOA') -->
+                                    <Button Text="✓ Accept Offer" 
+            FontFamily="MontserratBold" 
+            FontSize="10" 
+            BackgroundColor="#10B981" 
+            TextColor="#FFFFFF" 
+            CornerRadius="8" 
+            HeightRequest="30" 
+            Padding="0" 
+            IsVisible="{Binding IsOfferStage}"
+            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AcceptOfferCommand}" 
+            CommandParameter="{Binding .}">
+                                        <Button.Shadow>
+                                            <Shadow Brush="#10B981" Offset="0,2" Radius="6" Opacity="0.3" />
+                                        </Button.Shadow>
+                                    </Button>
+
+                                    <!-- 2. Standard Edit & Del Buttons -->
+                                    <Grid ColumnDefinitions="*, *" ColumnSpacing="6">
+                                        <Button Grid.Column="0" 
+                Text="Edit" 
+                FontFamily="MontserratSemiBold" 
+                FontSize="10" 
+                BackgroundColor="#F4F6F9" 
+                TextColor="#32418c" 
+                CornerRadius="8" 
+                HeightRequest="28" 
+                Padding="0" 
+                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditCommand}" 
+                CommandParameter="{Binding .}" />
+
+                                        <Button Grid.Column="1" 
+                Text="Del" 
+                FontFamily="MontserratSemiBold" 
+                FontSize="10" 
+                BackgroundColor="#FEE2E2" 
+                TextColor="#DC2626" 
+                CornerRadius="8" 
+                HeightRequest="28" 
+                Padding="0" 
+                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteCommand}" 
+                CommandParameter="{Binding .}" />
+                                    </Grid>
+
+                                </VerticalStackLayout>
 
                             </Grid>
                         </Border>

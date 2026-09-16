@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NULipaInternshipTracker.Views.ProfilePage"
+             BackgroundColor="#F8FAFC"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto, *">
+
+        <!-- Top NU Blue Banner -->
+        <Border Grid.Row="0" 
+                BackgroundColor="#32418c" 
+                StrokeThickness="0" 
+                Margin="0,0,0,-30"
+                StrokeShape="RoundRectangle 0,0,30,30"
+                Padding="16, 24, 16, 44">
+
+            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12" VerticalOptions="Center">
+                <Button Grid.Column="0" 
+                        Text="←" 
+                        FontFamily="MontserratBold" 
+                        FontSize="18" 
+                        TextColor="#FFFFFF" 
+                        BackgroundColor="Transparent" 
+                        Padding="0" 
+                        WidthRequest="32" 
+                        Clicked="OnBackClicked" />
+
+                <VerticalStackLayout Grid.Column="1" Spacing="2">
+                    <Label Text="ACCOUNT SETTINGS" FontFamily="MontserratBold" FontSize="10" TextColor="#fbd117" CharacterSpacing="1.2" />
+                    <Label Text="Student Profile" FontFamily="MontserratBold" FontSize="20" TextColor="#FFFFFF" />
+                </VerticalStackLayout>
+            </Grid>
+        </Border>
+
+        <!-- Form Card Container -->
+        <ScrollView Grid.Row="1" Margin="16, 0, 16, 16">
+            <VerticalStackLayout Spacing="16">
+
+                <Border BackgroundColor="#FFFFFF" StrokeThickness="0" StrokeShape="RoundRectangle 20" Padding="20">
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Offset="0,4" Radius="12" Opacity="0.06" />
+                    </Border.Shadow>
+
+                    <VerticalStackLayout Spacing="14">
+
+                        <!-- Avatar Badge -->
+                        <Border WidthRequest="70" HeightRequest="70" 
+                                Stroke="#fbd117" StrokeThickness="3" 
+                                BackgroundColor="#F1F5F9" 
+                                StrokeShape="RoundRectangle 35"
+                                HorizontalOptions="Center">
+                            <Label Text="👤" FontSize="32" HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+
+                        <Label x:Name="lblRoleBadge" Text="Role: Student" FontFamily="MontserratSemiBold" FontSize="11" TextColor="#64748B" HorizontalOptions="Center" />
+
+                        <!-- Full Name -->
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Full Name" FontFamily="MontserratSemiBold" FontSize="11" TextColor="#32418c" />
+                            <Border BackgroundColor="#F8FAFC" Stroke="#CBD5E1" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="12, 0">
+                                <Entry x:Name="entryFullName" Placeholder="Full Name" PlaceholderColor="#94A3B8" BackgroundColor="Transparent" FontFamily="MontserratRegular" FontSize="13" TextColor="#1E293B" HeightRequest="42" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Email -->
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Email Address" FontFamily="MontserratSemiBold" FontSize="11" TextColor="#32418c" />
+                            <Border BackgroundColor="#F8FAFC" Stroke="#CBD5E1" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="12, 0">
+                                <Entry x:Name="entryEmail" Placeholder="student@nulipa.edu.ph" PlaceholderColor="#94A3B8" BackgroundColor="Transparent" Keyboard="Email" FontFamily="MontserratRegular" FontSize="13" TextColor="#1E293B" HeightRequest="42" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Password -->
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="New Password (leave blank to keep current)" FontFamily="MontserratSemiBold" FontSize="11" TextColor="#32418c" />
+                            <Border BackgroundColor="#F8FAFC" Stroke="#CBD5E1" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="12, 0">
+                                <Entry x:Name="entryPassword" IsPassword="True" Placeholder="••••••••" PlaceholderColor="#94A3B8" BackgroundColor="Transparent" FontFamily="MontserratRegular" FontSize="13" TextColor="#1E293B" HeightRequest="42" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Save Changes Button -->
+                        <Button Text="Save Profile Changes" 
+                                FontFamily="MontserratBold" 
+                                FontSize="13" 
+                                BackgroundColor="#32418c" 
+                                TextColor="#FFFFFF" 
+                                CornerRadius="10" 
+                                HeightRequest="44" 
+                                Margin="0, 8, 0, 0" 
+                                Clicked="OnSaveChangesClicked" />
+
+                        <!-- Log Out Button -->
+                        <Button Text="Log Out of Account" 
+                                FontFamily="MontserratSemiBold" 
+                                FontSize="12" 
+                                BackgroundColor="#FEE2E2" 
+                                TextColor="#DC2626" 
+                                CornerRadius="10" 
+                                HeightRequest="40" 
+                                Clicked="OnLogoutClicked" />
+
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

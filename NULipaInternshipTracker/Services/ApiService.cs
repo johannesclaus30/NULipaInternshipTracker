@@ -86,4 +86,140 @@ public class ApiService
         }
         catch { return false; }
     }
+
+    // Inside Services/ApiService.cs
+
+    public async Task<User?> LoginAsync(string email, string password)
+    {
+        try
+        {
+            var payload = JsonSerializer.Serialize(new { Email = email, Password = password });
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+            var resp = await _client.PostAsync("auth/login.php", content);
+
+            if (!resp.IsSuccessStatusCode) return null;
+
+            var json = await resp.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<User>(json, _opts);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Login error: {ex.Message}");
+            return null;
+        }
+    }
+
+    public async Task<User?> RegisterAsync(string fullName, string email, string password)
+    {
+        try
+        {
+            var payload = JsonSerializer.Serialize(new { FullName = fullName, Email = email, Password = password });
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+            var resp = await _client.PostAsync("auth/register.php", content);
+
+            if (!resp.IsSuccessStatusCode) return null;
+
+            var json = await resp.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<User>(json, _opts);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Register error: {ex.Message}");
+            return null;
+        }
+    }
+
+    public async Task<List<Company>> GetCompaniesAsync()
+    {
+        try
+        {
+            var resp = await _client.GetAsync("companies/get_all.php");
+            if (!resp.IsSuccessStatusCode) return new();
+
+            var json = await resp.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<List<Company>>(json, _opts) ?? new();
+        }
+        catch { return new(); }
+    }
+
+    public async Task<List<JobApplication>> GetApplicationsByRoleAsync()
+    {
+        try
+        {
+            string url = "applications/get_all.php";
+
+            if (UserSession.IsStudent && UserSession.CurrentUser != null)
+                url += $"?student_id={UserSession.CurrentUser.Id}";
+            else if (UserSession.IsCompanyAdmin && UserSession.CurrentUser?.CompanyId != null)
+                url += $"?company_id={UserSession.CurrentUser.CompanyId}";
+
+            var resp = await _client.GetAsync(url);
+            if (!resp.IsSuccessStatusCode) return new();
+
+            var json = await resp.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<List<JobApplication>>(json, _opts) ?? new();
+        }
+        catch { return new(); }
+    }
+
+    public async Task<bool> UpdateApplicationStageAsync(int appId, string stage)
+    {
+        try
+        {
+            var payload = JsonSerializer.Serialize(new { Stage = stage });
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+            var resp = await _client.PutAsync($"applications/update.php?id={appId}", content);
+            return resp.IsSuccessStatusCode;
+        }
+        catch { return false; }
+    }
+
+    public async Task<User?> RegisterCompanyAsync(string companyName, string contactPerson, string email, string password)
+    {
+        try
+        {
+            var payload = JsonSerializer.Serialize(new
+            {
+                CompanyName = companyName,
+                ContactPerson = contactPerson,
+                Email = email,
+                Password = password
+            });
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+            var resp = await _client.PostAsync("auth/register_company.php", content);
+
+            if (!resp.IsSuccessStatusCode) return null;
+
+            var json = await resp.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<User>(json, _opts);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Company registration error: {ex.Message}");
+            return null;
+        }
+    }
+
+    public async Task<bool> UpdateProfileAsync(int userId, string fullName, string email, string? newPassword)
+    {
+        try
+        {
+            var payload = JsonSerializer.Serialize(new
+            {
+                Id = userId,
+                FullName = fullName,
+                Email = email,
+                Password = string.IsNullOrWhiteSpace(newPassword) ? null : newPassword
+            });
+
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+            var resp = await _client.PostAsync("auth/update_profile.php", content);
+            return resp.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Profile update error: {ex.Message}");
+            return false;
+        }
+    }
 }

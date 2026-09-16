@@ -14,6 +14,8 @@ public partial class ApplicationFormPage : ContentPage
     private string? _base64Logo = null;
     private const long MaxFileSizeBytes = 1 * 1024 * 1024; // 1 MB Limit
 
+    private List<Company> _availableCompanies = new();
+
     public ApplicationFormPage(ApiService api)
     {
         InitializeComponent();
@@ -23,18 +25,20 @@ public partial class ApplicationFormPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+
+        _availableCompanies = await _api.GetCompaniesAsync();
+        pickerCompany.ItemsSource = _availableCompanies;
+
         if (AppId > 0)
         {
             _existing = await _api.GetByIdAsync(AppId);
             if (_existing != null)
             {
                 lblHeader.Text = "Update Internship";
-                entryCompany.Text = _existing.CompanyName;
+                pickerCompany.SelectedItem = _availableCompanies.FirstOrDefault(c => c.Name == _existing.CompanyName);
                 entryRole.Text = _existing.RoleTitle;
                 pickerStage.SelectedItem = _existing.Stage;
                 pickerSetup.SelectedItem = _existing.WorkSetup;
-
-                // 👉 1. LOAD THE SAVED NOTES HERE:
                 editorNotes.Text = _existing.Notes;
 
                 // Load existing Logo if available
@@ -63,8 +67,6 @@ public partial class ApplicationFormPage : ContentPage
             pickerStage.SelectedIndex = 0;
             pickerSetup.SelectedIndex = 0;
             switchUnpaid.IsToggled = false;
-
-            // 👉 2. CLEAR THE FIELD FOR A FRESH NEW LOG:
             editorNotes.Text = string.Empty;
         }
     }
@@ -81,7 +83,6 @@ public partial class ApplicationFormPage : ContentPage
 
             if (result == null) return;
 
-            // Enforce reasonable file size limit (1MB)
             var fileInfo = new FileInfo(result.FullPath);
             if (fileInfo.Length > MaxFileSizeBytes)
             {
@@ -89,7 +90,6 @@ public partial class ApplicationFormPage : ContentPage
                 return;
             }
 
-            // Read into byte array and convert to Base64
             using var stream = await result.OpenReadAsync();
             using var memoryStream = new MemoryStream();
             await stream.CopyToAsync(memoryStream);
@@ -97,7 +97,6 @@ public partial class ApplicationFormPage : ContentPage
 
             _base64Logo = Convert.ToBase64String(imageBytes);
 
-            // Display in Preview
             imgLogoPreview.Source = ImageSource.FromStream(() => new MemoryStream(imageBytes));
             imgLogoPreview.IsVisible = true;
             lblLogoPlaceholder.IsVisible = false;
@@ -130,7 +129,6 @@ public partial class ApplicationFormPage : ContentPage
         }
         catch
         {
-            // Fallback to placeholder if corrupt
             imgLogoPreview.IsVisible = false;
             lblLogoPlaceholder.IsVisible = true;
             btnRemoveLogo.IsVisible = false;
@@ -144,9 +142,10 @@ public partial class ApplicationFormPage : ContentPage
 
     private async void OnSaveClicked(object sender, EventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(entryCompany.Text) || string.IsNullOrWhiteSpace(entryRole.Text))
+        var selectedCompany = pickerCompany.SelectedItem as Company;
+        if (selectedCompany == null || string.IsNullOrWhiteSpace(entryRole.Text))
         {
-            await DisplayAlert("Required Fields", "Company and Role Title must be filled.", "OK");
+            await DisplayAlert("Required Fields", "Please select a Company and enter a Role Title.", "OK");
             return;
         }
 
@@ -158,14 +157,17 @@ public partial class ApplicationFormPage : ContentPage
 
         var item = new JobApplication
         {
-            CompanyName = entryCompany.Text.Trim(),
+            StudentId = UserSession.CurrentUser?.Id,
+            StudentName = UserSession.CurrentUser?.FullName,
+            CompanyId = selectedCompany.Id,
+            CompanyName = selectedCompany.Name,
             RoleTitle = entryRole.Text.Trim(),
             Stage = pickerStage.SelectedItem?.ToString() ?? "Applied",
             WorkSetup = pickerSetup.SelectedItem?.ToString() ?? "Remote",
             ExpectedSalary = finalSalary,
             ApplicationDate = $"{datePickerApp.Date:yyyy-MM-dd}",
             Notes = editorNotes?.Text?.Trim() ?? "",
-            CompanyLogo = _base64Logo // Sent to your PHP API seamlessly
+            CompanyLogo = _base64Logo
         };
 
         bool ok;

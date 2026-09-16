@@ -115,4 +115,9 @@ public partial class MainPage : ContentPage
             }
         }
     }
+
+    private async void OnProfileClicked(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("ProfilePage");
+    }
 }
