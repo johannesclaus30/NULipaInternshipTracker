@@ -60,4 +60,59 @@ public partial class MainPage : ContentPage
         // Navigates back to the WelcomePage
         await Shell.Current.GoToAsync("..");
     }
+
+    private void OnFilterChipClicked(object sender, EventArgs e)
+    {
+        if (sender is Button clickedBtn && clickedBtn.CommandParameter is string stage)
+        {
+            // Highlight selected button, un-highlight siblings
+            if (clickedBtn.Parent is HorizontalStackLayout stack)
+            {
+                foreach (var child in stack.Children.OfType<Button>())
+                {
+                    child.BackgroundColor = Color.FromArgb("#FFFFFF");
+                    child.TextColor = Color.FromArgb("#475569");
+                }
+                clickedBtn.BackgroundColor = Color.FromArgb("#32418c");
+                clickedBtn.TextColor = Color.FromArgb("#FFFFFF");
+            }
+
+            // Apply filter to ViewModel
+            _vm?.SetStageFilter(stage);
+        }
+    }
+
+    // Inside MainPage.xaml.cs
+
+    protected override void OnSizeAllocated(double width, double height)
+    {
+        base.OnSizeAllocated(width, height);
+
+        if (ApplicationsCollection?.ItemsLayout is GridItemsLayout gridLayout)
+        {
+            // For standard phone width (< 500), keep it strictly 2 portrait cards per row
+            // On tablets or desktop windows (> 500), scale up to 3 or 4 columns so cards don't look stretched
+            if (width > 800)
+                gridLayout.Span = 4;
+            else if (width > 500)
+                gridLayout.Span = 3;
+            else
+                gridLayout.Span = 2;
+        }
+    }
+
+    private async void OnViewFullNotesClicked(object sender, EventArgs e)
+    {
+        if (sender is Button btn && btn.BindingContext is Models.JobApplication app)
+        {
+            if (!string.IsNullOrWhiteSpace(app.Notes))
+            {
+                await DisplayAlert(
+                    $"{app.CompanyName} — Notes",
+                    app.Notes,
+                    "Close"
+                );
+            }
+        }
+    }
 }

@@ -39,6 +39,60 @@
                 </VerticalStackLayout>
             </Grid>
 
+            <!-- Company Logo Picker Section -->
+            <VerticalStackLayout Spacing="8" HorizontalOptions="Center" Margin="0, 0, 0, 8">
+                <!-- Logo Preview Card -->
+                <Border WidthRequest="84" 
+            HeightRequest="84" 
+            StrokeShape="RoundRectangle 20" 
+            Stroke="#E2E8F0" 
+            StrokeThickness="1"
+            BackgroundColor="#FFFFFF">
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Offset="0,3" Radius="8" Opacity="0.06" />
+                    </Border.Shadow>
+
+                    <Grid>
+                        <!-- Default Placeholder Icon/Text -->
+                        <Label x:Name="lblLogoPlaceholder" 
+                   Text="🏢" 
+                   FontSize="32" 
+                   HorizontalOptions="Center" 
+                   VerticalOptions="Center" />
+
+                        <!-- Actual Selected Image -->
+                        <Image x:Name="imgLogoPreview" 
+                   Aspect="AspectFit" 
+                   IsVisible="False" 
+                   Margin="8" />
+                    </Grid>
+                </Border>
+
+                <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
+                    <Button Text="Upload Logo" 
+                FontFamily="MontserratSemiBold" 
+                FontSize="11" 
+                TextColor="#32418c" 
+                BackgroundColor="#EEF2F6" 
+                CornerRadius="8" 
+                HeightRequest="34" 
+                Padding="12, 0"
+                Clicked="OnPickLogoClicked" />
+
+                    <Button x:Name="btnRemoveLogo"
+                Text="Remove" 
+                FontFamily="MontserratSemiBold" 
+                FontSize="11" 
+                TextColor="#EF4444" 
+                BackgroundColor="#FEE2E2" 
+                CornerRadius="8" 
+                HeightRequest="34" 
+                Padding="10, 0"
+                IsVisible="False"
+                Clicked="OnRemoveLogoClicked" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+
             <!-- Basic Fields -->
             <VerticalStackLayout Spacing="6">
                 <Label Text="Company / Partner Host *" FontFamily="MontserratSemiBold" FontSize="12" TextColor="#475569" />
@@ -73,6 +127,7 @@
                                     <x:String>Applied</x:String>
                                     <x:String>Interview</x:String>
                                     <x:String>Offer / MOA</x:String>
+                                    <x:String>Accepted</x:String>
                                     <x:String>Rejected</x:String>
                                 </x:Array>
                             </Picker.ItemsSource>

@@ -10,6 +10,10 @@ public partial class ApplicationFormPage : ContentPage
     private JobApplication? _existing;
     public int AppId { get; set; } = 0;
 
+    // Holds the Base64 image string (or null)
+    private string? _base64Logo = null;
+    private const long MaxFileSizeBytes = 1 * 1024 * 1024; // 1 MB Limit
+
     public ApplicationFormPage(ApiService api)
     {
         InitializeComponent();
@@ -30,7 +34,16 @@ public partial class ApplicationFormPage : ContentPage
                 pickerStage.SelectedItem = _existing.Stage;
                 pickerSetup.SelectedItem = _existing.WorkSetup;
 
-                // Parse the Salary logic
+                // 👉 1. LOAD THE SAVED NOTES HERE:
+                editorNotes.Text = _existing.Notes;
+
+                // Load existing Logo if available
+                if (!string.IsNullOrWhiteSpace(_existing.CompanyLogo))
+                {
+                    _base64Logo = _existing.CompanyLogo;
+                    SetLogoPreviewFromBase64(_base64Logo);
+                }
+
                 if (_existing.ExpectedSalary == "No Allowance" || _existing.ExpectedSalary == "Unpaid")
                 {
                     switchUnpaid.IsToggled = true;
@@ -38,7 +51,6 @@ public partial class ApplicationFormPage : ContentPage
                 else
                 {
                     switchUnpaid.IsToggled = false;
-                    // Strip out "Php " so only the number goes into the Entry
                     entrySalary.Text = _existing.ExpectedSalary.Replace("Php ", "").Replace("Php", "").Trim();
                 }
 
@@ -51,10 +63,80 @@ public partial class ApplicationFormPage : ContentPage
             pickerStage.SelectedIndex = 0;
             pickerSetup.SelectedIndex = 0;
             switchUnpaid.IsToggled = false;
+
+            // 👉 2. CLEAR THE FIELD FOR A FRESH NEW LOG:
+            editorNotes.Text = string.Empty;
         }
     }
 
-    // Hide the numeric entry box when 'No Allowance' is flipped ON
+    private async void OnPickLogoClicked(object sender, EventArgs e)
+    {
+        try
+        {
+            var result = await FilePicker.Default.PickAsync(new PickOptions
+            {
+                PickerTitle = "Select Company Logo",
+                FileTypes = FilePickerFileType.Images
+            });
+
+            if (result == null) return;
+
+            // Enforce reasonable file size limit (1MB)
+            var fileInfo = new FileInfo(result.FullPath);
+            if (fileInfo.Length > MaxFileSizeBytes)
+            {
+                await DisplayAlert("File Too Large", "Please select an image smaller than 1 MB.", "OK");
+                return;
+            }
+
+            // Read into byte array and convert to Base64
+            using var stream = await result.OpenReadAsync();
+            using var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream);
+            byte[] imageBytes = memoryStream.ToArray();
+
+            _base64Logo = Convert.ToBase64String(imageBytes);
+
+            // Display in Preview
+            imgLogoPreview.Source = ImageSource.FromStream(() => new MemoryStream(imageBytes));
+            imgLogoPreview.IsVisible = true;
+            lblLogoPlaceholder.IsVisible = false;
+            btnRemoveLogo.IsVisible = true;
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Picker Error", $"Could not load image: {ex.Message}", "OK");
+        }
+    }
+
+    private void OnRemoveLogoClicked(object sender, EventArgs e)
+    {
+        _base64Logo = null;
+        imgLogoPreview.Source = null;
+        imgLogoPreview.IsVisible = false;
+        lblLogoPlaceholder.IsVisible = true;
+        btnRemoveLogo.IsVisible = false;
+    }
+
+    private void SetLogoPreviewFromBase64(string base64)
+    {
+        try
+        {
+            byte[] bytes = Convert.FromBase64String(base64);
+            imgLogoPreview.Source = ImageSource.FromStream(() => new MemoryStream(bytes));
+            imgLogoPreview.IsVisible = true;
+            lblLogoPlaceholder.IsVisible = false;
+            btnRemoveLogo.IsVisible = true;
+        }
+        catch
+        {
+            // Fallback to placeholder if corrupt
+            imgLogoPreview.IsVisible = false;
+            lblLogoPlaceholder.IsVisible = true;
+            btnRemoveLogo.IsVisible = false;
+        }
+    }
+
     private void OnUnpaidToggled(object sender, ToggledEventArgs e)
     {
         borderSalary.IsVisible = !e.Value;
@@ -68,7 +150,6 @@ public partial class ApplicationFormPage : ContentPage
             return;
         }
 
-        // Format the Salary
         string finalSalary = "No Allowance";
         if (!switchUnpaid.IsToggled)
         {
@@ -83,7 +164,8 @@ public partial class ApplicationFormPage : ContentPage
             WorkSetup = pickerSetup.SelectedItem?.ToString() ?? "Remote",
             ExpectedSalary = finalSalary,
             ApplicationDate = $"{datePickerApp.Date:yyyy-MM-dd}",
-            Notes = "" // Kept empty or add editor back if desired
+            Notes = editorNotes?.Text?.Trim() ?? "",
+            CompanyLogo = _base64Logo // Sent to your PHP API seamlessly
         };
 
         bool ok;
