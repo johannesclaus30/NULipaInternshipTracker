@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:models="clr-namespace:NULipaInternshipTracker.Models"
@@ -6,299 +6,342 @@
              BackgroundColor="#F4F6F9"
              Shell.NavBarIsVisible="False">
 
-    <Grid RowDefinitions="Auto, Auto, Auto, Auto, *" 
-          Padding="16, 20, 16, 12" 
-          RowSpacing="14">
-
-        <!-- 1. Header Bar -->
-        <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto, Auto, Auto" ColumnSpacing="8" VerticalOptions="Center">
-            <Button Grid.Column="0" Text="←" FontFamily="MontserratBold" FontSize="18" TextColor="#32418c" BackgroundColor="Transparent" Padding="0" WidthRequest="28" Clicked="OnBackToProfileClicked" />
-
-            <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
-                <Label Text="CAREER PORTAL" FontFamily="MontserratBold" FontSize="9" TextColor="#fbd117" CharacterSpacing="1.2" />
-                <Label Text="OJT Tracker" FontFamily="MontserratBold" FontSize="20" TextColor="#32418c" />
+    <Grid RowDefinitions="Auto, Auto, Auto, Auto, *" Padding="16,16,16,12" RowSpacing="14">
+        <!-- 0. Header with "My Applications" button -->
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto, Auto, Auto" ColumnSpacing="10" VerticalOptions="Center">
+            <VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
+                <Label Text="NATIONAL UNIVERSITY LIPA" FontFamily="MontserratBold" FontSize="9" TextColor="#fbd117" CharacterSpacing="1.2" />
+                <Label Text="Internship Listings" FontFamily="MontserratBold" FontSize="20" TextColor="#32418c" LineHeight="1" />
             </VerticalStackLayout>
 
-            <!-- Refresh Button -->
-            <Button Grid.Column="2" Text="🔄" FontSize="13" BackgroundColor="#FFFFFF" TextColor="#32418c" CornerRadius="10" HeightRequest="38" WidthRequest="38" Padding="0" Command="{Binding RefreshCommand}">
-                <Button.Shadow>
-                    <Shadow Brush="Black" Offset="0,3" Radius="8" Opacity="0.05" />
-                </Button.Shadow>
-            </Button>
+            <!-- My Applications - Pill secondary button -->
+            <Border Grid.Column="1" HeightRequest="44" Padding="14,0" BackgroundColor="#FFFFFF" Stroke="#E2E8F0" StrokeThickness="1.2" StrokeShape="RoundRectangle 22">
+                <Border.Shadow>
+                    <Shadow Brush="Black" Offset="0,2" Radius="8" Opacity="0.06" />
+                </Border.Shadow>
+                <Grid ColumnSpacing="6" ColumnDefinitions="Auto, Auto">
+                    <Label Grid.Column="0" Text="📋" FontSize="12" VerticalOptions="Center" TextColor="#32418c"/>
+                    <Label Grid.Column="1" Text="My Applications" FontSize="11" FontFamily="MontserratBold" TextColor="#32418c" VerticalOptions="Center"/>
+                    <Button Grid.ColumnSpan="2" BackgroundColor="Transparent" Padding="0" Clicked="OnMyApplicationsClicked">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroupList>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal"/>
+                                    <VisualState x:Name="Pressed">
+                                        <VisualState.Setters>
+                                            <Setter Property="Scale" Value="0.94"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateGroupList>
+                        </VisualStateManager.VisualStateGroups>
+                    </Button>
+                </Grid>
+            </Border>
 
-            <!-- + New Application Button -->
-            <Button Grid.Column="3" Text="+ New" FontFamily="MontserratSemiBold" FontSize="12" BackgroundColor="#32418c" TextColor="#FFFFFF" CornerRadius="10" HeightRequest="38" Padding="12, 0" Command="{Binding AddCommand}">
-                <Button.Shadow>
-                    <Shadow Brush="#32418c" Offset="0,3" Radius="10" Opacity="0.25" />
-                </Button.Shadow>
-            </Button>
+            <!-- Refresh Button - Circular white -->
+            <Border Grid.Column="2" HeightRequest="44" WidthRequest="44" BackgroundColor="#FFFFFF" Stroke="#E2E8F0" StrokeThickness="1.2" StrokeShape="RoundRectangle 22">
+                <Border.Shadow>
+                    <Shadow Brush="Black" Offset="0,2" Radius="8" Opacity="0.06" />
+                </Border.Shadow>
+                <Grid>
+                    <Label Text="↻" FontSize="20" FontFamily="MontserratBold" TextColor="#32418c" HorizontalOptions="Center" VerticalOptions="Center" Margin="0,-1,0,0"/>
+                    <Button BackgroundColor="Transparent" Command="{Binding RefreshCommand}" Padding="0">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroupList>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal"/>
+                                    <VisualState x:Name="Pressed">
+                                        <VisualState.Setters>
+                                            <Setter Property="Scale" Value="0.88"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateGroupList>
+                        </VisualStateManager.VisualStateGroups>
+                    </Button>
+                </Grid>
+            </Border>
 
-            <!-- Profile & Settings Button -->
-            <Button Grid.Column="4" Text="👤" FontSize="15" BackgroundColor="#fbd117" TextColor="#32418c" CornerRadius="10" HeightRequest="38" WidthRequest="38" Padding="0" Clicked="OnProfileClicked">
-                <Button.Shadow>
-                    <Shadow Brush="#fbd117" Offset="0,3" Radius="8" Opacity="0.35" />
-                </Button.Shadow>
-            </Button>
+            <!-- Profile Button - Circular Avatar / Initials -->
+            <Border Grid.Column="3" HeightRequest="44" WidthRequest="44" BackgroundColor="#fbd117" StrokeThickness="0" StrokeShape="RoundRectangle 22">
+                <Border.Shadow>
+                    <Shadow Brush="#fbd117" Offset="0,4" Radius="12" Opacity="0.40" />
+                </Border.Shadow>
+                <Grid>
+                    <!-- Fallback Initials (Shown when no photo is set) -->
+                    <Label x:Name="lblUserInitials" Text="NU" FontFamily="MontserratBold" FontSize="13" TextColor="#32418c" HorizontalOptions="Center" VerticalOptions="Center"/>
+
+                    <!-- Real Profile Photo (Shown when set) -->
+                    <Image x:Name="imgUserProfile" Aspect="AspectFill" IsVisible="False" Clip="{RoundRectangleGeometry CornerRadius='22', Rect='0,0,44,44'}" />
+
+                    <Button BackgroundColor="Transparent" Clicked="OnProfileClicked" Padding="0">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroupList>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal"/>
+                                    <VisualState x:Name="Pressed">
+                                        <VisualState.Setters>
+                                            <Setter Property="Scale" Value="0.88"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateGroupList>
+                        </VisualStateManager.VisualStateGroups>
+                    </Button>
+                </Grid>
+            </Border>
         </Grid>
 
-        <!-- 2. Stat Counters (3-Column Layout) -->
-        <Grid Grid.Row="1" ColumnDefinitions="*, *, *" ColumnSpacing="8">
-            <!-- 1. Total Applied -->
-            <Border Grid.Column="0" BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="10, 10" StrokeShape="RoundRectangle 14">
+        <!-- 1. Stats Counter Row -->
+        <Grid Grid.Row="1" ColumnDefinitions="*, *, *, *" ColumnSpacing="8">
+            <Border Grid.Column="0" BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="0,10" StrokeShape="RoundRectangle 14">
                 <Border.Shadow>
-                    <Shadow Brush="Black" Offset="0,2" Radius="6" Opacity="0.04" />
+                    <Shadow Brush="Black" Offset="0,2" Radius="6" Opacity="0.05" />
                 </Border.Shadow>
                 <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
-                    <Label Text="{Binding TotalApplied}" FontFamily="MontserratBold" FontSize="20" TextColor="#32418c" HorizontalOptions="Center" />
-                    <Label Text="SUBMITTED" FontFamily="MontserratBold" FontSize="8" TextColor="#64748B" CharacterSpacing="0.8" HorizontalOptions="Center" />
+                    <Label Text="{Binding TotalAvailable}" FontFamily="MontserratBold" FontSize="18" TextColor="#32418c" HorizontalOptions="Center"/>
+                    <Label Text="OPENINGS" FontFamily="MontserratBold" FontSize="7.5" TextColor="#64748B" HorizontalOptions="Center"/>
                 </VerticalStackLayout>
             </Border>
-
-            <!-- 2. Interviews -->
-            <Border Grid.Column="1" BackgroundColor="#32418c" StrokeThickness="0" Padding="10, 10" StrokeShape="RoundRectangle 14">
+            <Border Grid.Column="1" BackgroundColor="#32418c" StrokeThickness="0" Padding="0,10" StrokeShape="RoundRectangle 14">
                 <Border.Shadow>
-                    <Shadow Brush="#32418c" Offset="0,3" Radius="8" Opacity="0.2" />
+                    <Shadow Brush="#32418c" Offset="0,4" Radius="10" Opacity="0.22" />
                 </Border.Shadow>
                 <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
-                    <Label Text="{Binding InterviewsSecured}" FontFamily="MontserratBold" FontSize="20" TextColor="#fbd117" HorizontalOptions="Center" />
-                    <Label Text="INTERVIEW" FontFamily="MontserratBold" FontSize="8" TextColor="#D4E2EE" CharacterSpacing="0.8" HorizontalOptions="Center" />
+                    <Label Text="{Binding AppliedCount}" FontFamily="MontserratBold" FontSize="18" TextColor="#FFFFFF" HorizontalOptions="Center"/>
+                    <Label Text="APPLIED" FontFamily="MontserratBold" FontSize="7.5" TextColor="#BFCAFF" HorizontalOptions="Center"/>
                 </VerticalStackLayout>
             </Border>
-
-            <!-- 3. Accepted / Offers -->
-            <Border Grid.Column="2" BackgroundColor="#10B981" StrokeThickness="0" Padding="10, 10" StrokeShape="RoundRectangle 14">
+            <Border Grid.Column="2" BackgroundColor="#fbd117" StrokeThickness="0" Padding="0,10" StrokeShape="RoundRectangle 14">
                 <Border.Shadow>
-                    <Shadow Brush="#10B981" Offset="0,3" Radius="8" Opacity="0.25" />
+                    <Shadow Brush="#fbd117" Offset="0,4" Radius="10" Opacity="0.35" />
                 </Border.Shadow>
                 <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
-                    <Label Text="{Binding OffersAccepted}" FontFamily="MontserratBold" FontSize="20" TextColor="#FFFFFF" HorizontalOptions="Center" />
-                    <Label Text="ACCEPTED" FontFamily="MontserratBold" FontSize="8" TextColor="#D1FAE5" CharacterSpacing="0.8" HorizontalOptions="Center" />
+                    <Label Text="{Binding InterviewCount}" FontFamily="MontserratBold" FontSize="18" TextColor="#32418c" HorizontalOptions="Center"/>
+                    <Label Text="INTERVIEWS" FontFamily="MontserratBold" FontSize="7.5" TextColor="#5A4A00" HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+            <Border Grid.Column="3" BackgroundColor="#10B981" StrokeThickness="0" Padding="0,10" StrokeShape="RoundRectangle 14">
+                <Border.Shadow>
+                    <Shadow Brush="#10B981" Offset="0,4" Radius="10" Opacity="0.28" />
+                </Border.Shadow>
+                <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
+                    <Label Text="{Binding OffersAccepted}" FontFamily="MontserratBold" FontSize="18" TextColor="#FFFFFF" HorizontalOptions="Center"/>
+                    <Label Text="ACCEPTED" FontFamily="MontserratBold" FontSize="7.5" TextColor="#D1FAE5" HorizontalOptions="Center"/>
                 </VerticalStackLayout>
             </Border>
         </Grid>
 
-        <!-- 3. Search Bar -->
-        <Border Grid.Row="2" BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="6, 0" StrokeShape="RoundRectangle 12">
+        <!-- 2. Search Bar -->
+        <Border Grid.Row="2" BackgroundColor="#FFFFFF" StrokeThickness="0" Padding="12,0" StrokeShape="RoundRectangle 14">
             <Border.Shadow>
-                <Shadow Brush="Black" Offset="0,2" Radius="6" Opacity="0.04" />
+                <Shadow Brush="Black" Offset="0,2" Radius="8" Opacity="0.05" />
             </Border.Shadow>
-            <SearchBar Placeholder="Search company or role..." PlaceholderColor="#94A3B8" TextColor="#32418c" FontFamily="MontserratRegular" FontSize="12" BackgroundColor="Transparent" TextChanged="OnSearchTextChanged" HeightRequest="40" />
+            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="6">
+                <Label Grid.Column="0" Text="🔍" FontSize="12" VerticalOptions="Center" TextColor="#94A3B8"/>
+                <SearchBar Grid.Column="1" Placeholder="Search company, role, or skill..." PlaceholderColor="#94A3B8" TextColor="#32418c" FontFamily="MontserratRegular" FontSize="12.5" BackgroundColor="Transparent" TextChanged="OnSearchTextChanged" HeightRequest="42"/>
+            </Grid>
         </Border>
 
-        <!-- 4. Stage Filter Chips (Includes Accepted) -->
+        <!-- 3. Filter Chips (Added HYBRID chip) -->
         <ScrollView Grid.Row="3" Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
             <HorizontalStackLayout Spacing="8">
-                <Button Text="All" Clicked="OnFilterChipClicked" CommandParameter="All" FontFamily="MontserratSemiBold" FontSize="11" CornerRadius="16" HeightRequest="32" Padding="14, 0" BackgroundColor="#32418c" TextColor="#FFFFFF" />
-                <Button Text="Accepted" Clicked="OnFilterChipClicked" CommandParameter="Accepted" FontFamily="MontserratSemiBold" FontSize="11" CornerRadius="16" HeightRequest="32" Padding="14, 0" BackgroundColor="#FFFFFF" TextColor="#475569" />
-                <Button Text="Offer / MOA" Clicked="OnFilterChipClicked" CommandParameter="Offer / MOA" FontFamily="MontserratSemiBold" FontSize="11" CornerRadius="16" HeightRequest="32" Padding="14, 0" BackgroundColor="#FFFFFF" TextColor="#475569" />
-                <Button Text="Applied" Clicked="OnFilterChipClicked" CommandParameter="Applied" FontFamily="MontserratSemiBold" FontSize="11" CornerRadius="16" HeightRequest="32" Padding="14, 0" BackgroundColor="#FFFFFF" TextColor="#475569" />
-                <Button Text="Interview" Clicked="OnFilterChipClicked" CommandParameter="Interview" FontFamily="MontserratSemiBold" FontSize="11" CornerRadius="16" HeightRequest="32" Padding="14, 0" BackgroundColor="#FFFFFF" TextColor="#475569" />
-                <Button Text="Rejected" Clicked="OnFilterChipClicked" CommandParameter="Rejected" FontFamily="MontserratSemiBold" FontSize="11" CornerRadius="16" HeightRequest="32" Padding="14, 0" BackgroundColor="#FFFFFF" TextColor="#475569" />
+                <Button Text="All Openings" Clicked="OnFilterChipClicked" CommandParameter="All" FontFamily="MontserratSemiBold" FontSize="11" CornerRadius="20" HeightRequest="34" Padding="16,0" BackgroundColor="#32418c" TextColor="#FFFFFF" BorderWidth="1" BorderColor="#32418c"/>
+                <Button Text="Remote" Clicked="OnFilterChipClicked" CommandParameter="Remote" FontFamily="MontserratSemiBold" FontSize="11" CornerRadius="20" HeightRequest="34" Padding="16,0" BackgroundColor="#FFFFFF" TextColor="#475569" BorderWidth="1" BorderColor="#E2E8F0"/>
+                <Button Text="Hybrid" Clicked="OnFilterChipClicked" CommandParameter="Hybrid" FontFamily="MontserratSemiBold" FontSize="11" CornerRadius="20" HeightRequest="34" Padding="16,0" BackgroundColor="#FFFFFF" TextColor="#475569" BorderWidth="1" BorderColor="#E2E8F0"/>
+                <Button Text="Onsite" Clicked="OnFilterChipClicked" CommandParameter="Onsite" FontFamily="MontserratSemiBold" FontSize="11" CornerRadius="20" HeightRequest="34" Padding="16,0" BackgroundColor="#FFFFFF" TextColor="#475569" BorderWidth="1" BorderColor="#E2E8F0"/>
             </HorizontalStackLayout>
         </ScrollView>
 
-        <!-- 5. 2-COLUMN PORTRAIT GRID -->
+        <!-- 4. Job Postings Grid -->
         <RefreshView Grid.Row="4" Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
-            <CollectionView x:Name="ApplicationsCollection" ItemsSource="{Binding Applications}" SelectionMode="None">
-
+            <CollectionView x:Name="PostingsCollection" ItemsSource="{Binding Postings}" SelectionMode="None" VerticalOptions="Fill">
                 <CollectionView.ItemsLayout>
-                    <GridItemsLayout Orientation="Vertical" 
-                                     Span="2" 
-                                     HorizontalItemSpacing="12" 
-                                     VerticalItemSpacing="12" />
+                    <GridItemsLayout Orientation="Vertical" Span="2" HorizontalItemSpacing="10" VerticalItemSpacing="12" />
                 </CollectionView.ItemsLayout>
 
-                <CollectionView.EmptyView>
-                    <VerticalStackLayout Spacing="8" HorizontalOptions="Center" VerticalOptions="Center" Padding="0, 50, 0, 0">
-                        <Label Text="🏢" FontSize="36" HorizontalOptions="Center" Opacity="0.5" />
-                        <Label Text="No applications found" FontFamily="MontserratSemiBold" FontSize="14" TextColor="#64748B" HorizontalOptions="Center" />
-                    </VerticalStackLayout>
-                </CollectionView.EmptyView>
-
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:JobApplication">
+                    <DataTemplate x:DataType="models:JobPosting">
                         <Border BackgroundColor="#FFFFFF" 
                                 StrokeThickness="0" 
-                                StrokeShape="RoundRectangle 16"
+                                StrokeShape="RoundRectangle 16" 
                                 Padding="10">
                             <Border.Shadow>
-                                <Shadow Brush="Black" Offset="0,4" Radius="8" Opacity="0.05" />
+                                <Shadow Brush="Black" Offset="0,4" Radius="10" Opacity="0.05"/>
                             </Border.Shadow>
 
-                            <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto" RowSpacing="6">
+                            <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto" RowSpacing="5">
 
-                                <!-- Row 0: Logo Banner & Stage Badge -->
-                                <Border Grid.Row="0"
-                                        HeightRequest="96"
-                                        HorizontalOptions="Fill"
-                                        StrokeShape="RoundRectangle 12"
-                                        BackgroundColor="#FFFFFF"
-                                        Stroke="#EEF2F6"
+                                <!-- Row 0: Logo & Top Status Tag -->
+                                <Border Grid.Row="0" 
+                                        HeightRequest="65" 
+                                        StrokeShape="RoundRectangle 10" 
+                                        BackgroundColor="#F8FAFC" 
+                                        Stroke="#EEF2F6" 
                                         StrokeThickness="1">
                                     <Grid>
-                                        <!-- 1. Fallback Placeholder: Only exists visually when HasNoLogo is true -->
-                                        <VerticalStackLayout HorizontalOptions="Center" 
-                                                             VerticalOptions="Center" 
-                                                             IsVisible="{Binding HasNoLogo}">
-                                            <Label Text="🏢" 
-                                                   FontSize="34" 
-                                                   HorizontalOptions="Center" 
-                                                   VerticalOptions="Center" />
-                                        </VerticalStackLayout>
+                                        <Label Text="🏢" FontSize="26" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding HasNoLogo}"/>
+                                        <Image Source="{Binding LogoSource}" Aspect="AspectFit" Margin="6" IsVisible="{Binding HasLogo}"/>
 
-                                        <!-- 2. Logo Container: Completely covers the background with pure white when HasLogo is true -->
-                                        <Border BackgroundColor="#FFFFFF"
-                                                StrokeThickness="0"
-                                                IsVisible="{Binding HasLogo}">
-                                            <Image Source="{Binding LogoSource}" 
-                                                   Aspect="AspectFit" 
-                                                   Margin="8" />
-                                        </Border>
-
-                                        <!-- 3. Floating Stage Badge -->
-                                        <Border HorizontalOptions="End" 
-                                                VerticalOptions="Start" 
-                                                Margin="6" 
-                                                BackgroundColor="#EEF2F6" 
-                                                StrokeThickness="0" 
-                                                Padding="6, 2" 
-                                                StrokeShape="RoundRectangle 8">
-                                            <Label Text="{Binding Stage}" 
-                                                   FontFamily="MontserratBold" 
-                                                   FontSize="8" 
-                                                   TextColor="#32418c" />
+                                        <Border HorizontalOptions="End" VerticalOptions="Start" Margin="5" Padding="6,2" StrokeShape="RoundRectangle 14" StrokeThickness="0" BackgroundColor="#EEF2F6" IsVisible="{Binding HasApplied}">
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding StudentApplicationStage}" Value="Applied">
+                                                    <Setter Property="BackgroundColor" Value="#DBEAFE"/>
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Border" Binding="{Binding StudentApplicationStage}" Value="For Interview">
+                                                    <Setter Property="BackgroundColor" Value="#FEF9C3"/>
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Border" Binding="{Binding StudentApplicationStage}" Value="Interview">
+                                                    <Setter Property="BackgroundColor" Value="#FEF9C3"/>
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Border" Binding="{Binding StudentApplicationStage}" Value="Rejected">
+                                                    <Setter Property="BackgroundColor" Value="#FEE2E2"/>
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Border" Binding="{Binding StudentApplicationStage}" Value="Accepted">
+                                                    <Setter Property="BackgroundColor" Value="#D1FAE5"/>
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Border" Binding="{Binding StudentApplicationStage}" Value="Offer">
+                                                    <Setter Property="BackgroundColor" Value="#D1FAE5"/>
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Border" Binding="{Binding StudentApplicationStage}" Value="Offer / MOA">
+                                                    <Setter Property="BackgroundColor" Value="#D1FAE5"/>
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <Label Text="{Binding StudentApplicationStage}" FontFamily="MontserratBold" FontSize="7.5">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding StudentApplicationStage}" Value="Applied">
+                                                        <Setter Property="TextColor" Value="#1E40AF"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding StudentApplicationStage}" Value="For Interview">
+                                                        <Setter Property="TextColor" Value="#854D0E"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding StudentApplicationStage}" Value="Interview">
+                                                        <Setter Property="TextColor" Value="#854D0E"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding StudentApplicationStage}" Value="Rejected">
+                                                        <Setter Property="TextColor" Value="#991B1B"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding StudentApplicationStage}" Value="Accepted">
+                                                        <Setter Property="TextColor" Value="#065F46"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding StudentApplicationStage}" Value="Offer">
+                                                        <Setter Property="TextColor" Value="#065F46"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding StudentApplicationStage}" Value="Offer / MOA">
+                                                        <Setter Property="TextColor" Value="#065F46"/>
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
                                         </Border>
                                     </Grid>
                                 </Border>
 
                                 <!-- Row 1: Company & Role -->
-                                <VerticalStackLayout Grid.Row="1" Spacing="2" Margin="2, 2, 2, 0">
-                                    <Label Text="{Binding CompanyName}" 
-                                           FontFamily="MontserratBold" 
-                                           FontSize="13" 
-                                           TextColor="#32418c" 
-                                           LineBreakMode="TailTruncation" />
-
-                                    <Label Text="{Binding RoleTitle}" 
-                                           FontFamily="MontserratMedium" 
-                                           FontSize="11" 
-                                           TextColor="#475569" 
-                                           LineBreakMode="TailTruncation" />
+                                <VerticalStackLayout Grid.Row="1" Spacing="1" Margin="2,0">
+                                    <Label Text="{Binding CompanyName}" FontFamily="MontserratBold" FontSize="12" TextColor="#1E293B" MaxLines="1" LineBreakMode="TailTruncation"/>
+                                    <Label Text="{Binding RoleTitle}" FontFamily="MontserratMedium" FontSize="10" TextColor="#475569" MaxLines="2" LineBreakMode="TailTruncation" HeightRequest="28" VerticalTextAlignment="Start"/>
                                 </VerticalStackLayout>
 
-                                <!-- Row 2: Setup & Stipend -->
-                                <VerticalStackLayout Grid.Row="2" Spacing="4" Margin="2, 0">
-                                    <HorizontalStackLayout Spacing="4">
-                                        <Border BackgroundColor="#F1F5F9" StrokeThickness="0" StrokeShape="RoundRectangle 6" Padding="6, 2">
-                                            <Label Text="{Binding WorkSetup}" FontFamily="MontserratMedium" FontSize="8" TextColor="#64748B" />
+                                <!-- Row 2: Setup & Salary Badges -->
+                                <VerticalStackLayout Grid.Row="2" Spacing="4" Margin="2,0">
+                                    <FlexLayout Direction="Row" Wrap="Wrap">
+                                        <Border BackgroundColor="#F1F5F9" StrokeThickness="0" StrokeShape="RoundRectangle 5" Padding="6,2" Margin="0,0,4,0">
+                                            <Label Text="{Binding WorkSetup}" FontFamily="MontserratSemiBold" FontSize="7.5" TextColor="#475569"/>
                                         </Border>
-
-                                        <Border BackgroundColor="#FEF9C3" StrokeThickness="0" StrokeShape="RoundRectangle 6" Padding="6, 2">
-                                            <Label Text="{Binding ExpectedSalary}" FontFamily="MontserratBold" FontSize="8" TextColor="#854D0E" MaxLines="1" LineBreakMode="TailTruncation" />
+                                        <Border BackgroundColor="#FEF9C3" StrokeThickness="0" StrokeShape="RoundRectangle 5" Padding="6,2">
+                                            <Label Text="{Binding Salary}" FontFamily="MontserratBold" FontSize="7.5" TextColor="#854D0E"/>
                                         </Border>
-                                    </HorizontalStackLayout>
-
-                                    <Label Text="{Binding ApplicationDate, StringFormat='📅 {0}'}" 
-                                           FontFamily="MontserratRegular" 
-                                           FontSize="9" 
-                                           TextColor="#94A3B8" />
+                                    </FlexLayout>
+                                    <Label Text="{Binding PostedDate, StringFormat='🕒 {0}'}" FontFamily="MontserratRegular" FontSize="7.5" TextColor="#94A3B8"/>
                                 </VerticalStackLayout>
 
-                                <!-- Row 3: Notes Preview (Fixed Height, Truncated) -->
-                                <Border Grid.Row="3"
-        BackgroundColor="#F8FAFC"
-        Stroke="#E2E8F0"
-        StrokeThickness="1"
-        StrokeShape="RoundRectangle 8"
-        Padding="8, 6"
-        Margin="0, 2, 0, 0">
-                                    <Border.Triggers>
-                                        <DataTrigger TargetType="Border" Binding="{Binding Notes}" Value="">
-                                            <Setter Property="IsVisible" Value="False" />
-                                        </DataTrigger>
-                                        <DataTrigger TargetType="Border" Binding="{Binding Notes}" Value="{x:Null}">
-                                            <Setter Property="IsVisible" Value="False" />
-                                        </DataTrigger>
-                                    </Border.Triggers>
-
-                                    <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="6" VerticalOptions="Center">
-                                        <Label Grid.Column="0" 
-               Text="📝" 
-               FontSize="10" 
-               VerticalOptions="Center" />
-
-                                        <!-- Fixed to 2 lines so the card structure never distorts -->
-                                        <Label Grid.Column="1" 
-               Text="{Binding Notes}" 
-               FontFamily="MontserratRegular" 
-               FontSize="9" 
-               TextColor="#64748B" 
-               MaxLines="2" 
-               LineBreakMode="TailTruncation"
-               VerticalOptions="Center" />
-
-                                        <!-- View Full Note Button -->
-                                        <Button Grid.Column="2"
-                                                Text="more..."
-                                                Clicked="OnViewFullNotesClicked"
-                                                FontFamily="MontserratSemiBold"
-                                                FontSize="8"
-                                                TextColor="#32418c"
-                                                BackgroundColor="Transparent"
-                                                Padding="0"
-                                                HeightRequest="18"
-                                                VerticalOptions="Center" />
+                                <!-- Row 3: Description Preview -->
+                                <Border Grid.Row="3" BackgroundColor="#F8FAFC" StrokeThickness="0" StrokeShape="RoundRectangle 8" Padding="6,4" HeightRequest="26">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ShowDescriptionCommand}" CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                                        <Label Grid.Column="0" Text="{Binding PreviewDescription}" FontFamily="MontserratRegular" FontSize="8.5" TextColor="#64748B" MaxLines="1" LineBreakMode="TailTruncation" VerticalOptions="Center"/>
+                                        <Label Grid.Column="1" Text="more" FontFamily="MontserratBold" FontSize="8" TextColor="#32418c" IsVisible="{Binding IsLongDescription}" VerticalOptions="Center" Margin="4,0,0,0"/>
                                     </Grid>
                                 </Border>
 
-                                <!-- Row 4: Action Buttons (With Dynamic Accept Button for Offers) -->
-                                <VerticalStackLayout Grid.Row="4" Spacing="6" Margin="0, 4, 0, 2">
+                                <!-- Row 4: Action Button -->
+                                <Grid Grid.Row="4" Margin="0,2,0,0">
+                                    <Button Text="Apply Now" 
+                                            FontFamily="MontserratBold" 
+                                            FontSize="10" 
+                                            BackgroundColor="#32418c" 
+                                            TextColor="#FFFFFF" 
+                                            CornerRadius="8" 
+                                            HeightRequest="30" 
+                                            Padding="0" 
+                                            IsVisible="{Binding CanApply}" 
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ApplyCommand}" 
+                                            CommandParameter="{Binding .}"/>
 
-                                    <!-- 1. Accept Button (ONLY visible when Stage == 'Offer / MOA') -->
                                     <Button Text="✓ Accept Offer" 
-            FontFamily="MontserratBold" 
-            FontSize="10" 
-            BackgroundColor="#10B981" 
-            TextColor="#FFFFFF" 
-            CornerRadius="8" 
-            HeightRequest="30" 
-            Padding="0" 
-            IsVisible="{Binding IsOfferStage}"
-            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AcceptOfferCommand}" 
-            CommandParameter="{Binding .}">
-                                        <Button.Shadow>
-                                            <Shadow Brush="#10B981" Offset="0,2" Radius="6" Opacity="0.3" />
-                                        </Button.Shadow>
-                                    </Button>
+                                            FontFamily="MontserratBold" 
+                                            FontSize="10" 
+                                            BackgroundColor="#10B981" 
+                                            TextColor="#FFFFFF" 
+                                            CornerRadius="8" 
+                                            HeightRequest="30" 
+                                            Padding="0" 
+                                            IsVisible="{Binding IsOfferStage}" 
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AcceptOfferCommand}" 
+                                            CommandParameter="{Binding .}"/>
 
-                                    <!-- 2. Standard Edit & Del Buttons -->
-                                    <Grid ColumnDefinitions="*, *" ColumnSpacing="6">
-                                        <Button Grid.Column="0" 
-                Text="Edit" 
-                FontFamily="MontserratSemiBold" 
-                FontSize="10" 
-                BackgroundColor="#F4F6F9" 
-                TextColor="#32418c" 
-                CornerRadius="8" 
-                HeightRequest="28" 
-                Padding="0" 
-                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditCommand}" 
-                CommandParameter="{Binding .}" />
-
-                                        <Button Grid.Column="1" 
-                Text="Del" 
-                FontFamily="MontserratSemiBold" 
-                FontSize="10" 
-                BackgroundColor="#FEE2E2" 
-                TextColor="#DC2626" 
-                CornerRadius="8" 
-                HeightRequest="28" 
-                Padding="0" 
-                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteCommand}" 
-                CommandParameter="{Binding .}" />
-                                    </Grid>
-
-                                </VerticalStackLayout>
+                                    <Border StrokeThickness="0" 
+                                            StrokeShape="RoundRectangle 8" 
+                                            HeightRequest="30" 
+                                            Padding="6,0" 
+                                            VerticalOptions="Center">
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding HasApplied}" Value="False">
+                                                <Setter Property="IsVisible" Value="False"/>
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsOfferStage}" Value="True">
+                                                <Setter Property="IsVisible" Value="False"/>
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Border" Binding="{Binding StudentApplicationStage}" Value="Applied">
+                                                <Setter Property="BackgroundColor" Value="#DBEAFE"/>
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Border" Binding="{Binding StudentApplicationStage}" Value="For Interview">
+                                                <Setter Property="BackgroundColor" Value="#FEF9C3"/>
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Border" Binding="{Binding StudentApplicationStage}" Value="Interview">
+                                                <Setter Property="BackgroundColor" Value="#FEF9C3"/>
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Border" Binding="{Binding StudentApplicationStage}" Value="Rejected">
+                                                <Setter Property="BackgroundColor" Value="#FEE2E2"/>
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Border" Binding="{Binding StudentApplicationStage}" Value="Accepted">
+                                                <Setter Property="BackgroundColor" Value="#D1FAE5"/>
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                        <Label Text="{Binding StudentApplicationStage}" FontFamily="MontserratBold" FontSize="9.5" HorizontalOptions="Center" VerticalOptions="Center">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding StudentApplicationStage}" Value="Applied">
+                                                    <Setter Property="TextColor" Value="#1E40AF"/>
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Label" Binding="{Binding StudentApplicationStage}" Value="For Interview">
+                                                    <Setter Property="TextColor" Value="#854D0E"/>
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Label" Binding="{Binding StudentApplicationStage}" Value="Interview">
+                                                    <Setter Property="TextColor" Value="#854D0E"/>
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Label" Binding="{Binding StudentApplicationStage}" Value="Rejected">
+                                                    <Setter Property="TextColor" Value="#991B1B"/>
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Label" Binding="{Binding StudentApplicationStage}" Value="Accepted">
+                                                    <Setter Property="TextColor" Value="#065F46"/>
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                    </Border>
+                                </Grid>
 
                             </Grid>
                         </Border>

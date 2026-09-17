@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NULipaInternshipTracker.Views.PostOpeningPage"
+             BackgroundColor="#F4F6F9"
+             NavigationPage.HasNavigationBar="False">
+
+    <Grid RowDefinitions="Auto, *" Padding="16, 20, 16, 16">
+
+        <Grid Grid.Row="0" ColumnDefinitions="Auto, *" ColumnSpacing="10" VerticalOptions="Center">
+            <Button Grid.Column="0" Text="←" FontFamily="MontserratBold" FontSize="18" TextColor="#32418c" BackgroundColor="Transparent" Padding="0" WidthRequest="32" Clicked="OnBackClicked" />
+            <Label x:Name="lblPageTitle" Grid.Column="1" Text="Post Internship Vacancy" FontFamily="MontserratBold" FontSize="19" TextColor="#32418c" VerticalOptions="Center" />
+        </Grid>
+
+        <ScrollView Grid.Row="1" Margin="0, 12, 0, 0">
+            <Border BackgroundColor="#FFFFFF" StrokeThickness="0" StrokeShape="RoundRectangle 16" Padding="16">
+                <Border.Shadow>
+                    <Shadow Brush="Black" Offset="0,4" Radius="10" Opacity="0.05" />
+                </Border.Shadow>
+
+                <VerticalStackLayout Spacing="14">
+                    <!-- Role Title -->
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Role / Position Title *" FontFamily="MontserratSemiBold" FontSize="11" TextColor="#32418c" />
+                        <Border BackgroundColor="#F8FAFC" Stroke="#CBD5E1" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="10, 0">
+                            <Entry x:Name="entryRole" Placeholder="e.g. Associate Web Developer Intern" TextColor="#1E293B" BackgroundColor="Transparent" FontFamily="MontserratRegular" FontSize="12.5" HeightRequest="40" />
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- Work Setup & Slots -->
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Work Setup *" FontFamily="MontserratSemiBold" FontSize="11" TextColor="#32418c" />
+                            <Border BackgroundColor="#F8FAFC" Stroke="#CBD5E1" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="6, 0">
+                                <Picker x:Name="pickerSetup" TextColor="#1E293B" FontFamily="MontserratMedium" FontSize="12" HeightRequest="40">
+                                    <Picker.ItemsSource>
+                                        <x:Array Type="{x:Type x:String}">
+                                            <x:String>Onsite</x:String>
+                                            <x:String>Hybrid</x:String>
+                                            <x:String>Remote</x:String>
+                                        </x:Array>
+                                    </Picker.ItemsSource>
+                                </Picker>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Numeric Only Slots Field -->
+                        <VerticalStackLayout Grid.Column="1" Spacing="4">
+                            <Label Text="Slots Available *" FontFamily="MontserratSemiBold" FontSize="11" TextColor="#32418c" />
+                            <Border BackgroundColor="#F8FAFC" Stroke="#CBD5E1" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="10, 0">
+                                <Entry x:Name="entrySlots" 
+                                       Text="1" 
+                                       TextColor="#1E293B" 
+                                       Keyboard="Numeric" 
+                                       TextChanged="OnSlotsTextChanged"
+                                       BackgroundColor="Transparent" 
+                                       FontFamily="MontserratRegular" 
+                                       FontSize="12.5" 
+                                       HeightRequest="40" />
+                            </Border>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <!-- Daily Allowance Toggle -->
+                    <Border BackgroundColor="#F8FAFC" Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="12, 10">
+                        <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                            <VerticalStackLayout Spacing="1">
+                                <Label Text="Provide Daily Allowance?" FontFamily="MontserratSemiBold" FontSize="12" TextColor="#1E293B" />
+                                <Label Text="Turn off if internship is strictly unpaid." FontFamily="MontserratRegular" FontSize="9.5" TextColor="#64748B" />
+                            </VerticalStackLayout>
+                            <Switch Grid.Column="1" x:Name="switchAllowance" IsToggled="True" Toggled="OnAllowanceToggled" OnColor="#32418c" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Daily Rate Input -->
+                    <VerticalStackLayout x:Name="layoutSalary" Spacing="4">
+                        <Label Text="Daily Stipend (in PHP) *" FontFamily="MontserratSemiBold" FontSize="11" TextColor="#32418c" />
+                        <Border BackgroundColor="#F8FAFC" Stroke="#CBD5E1" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="10, 0">
+                            <Grid ColumnDefinitions="Auto, *">
+                                <Label Text="₱ " FontFamily="MontserratBold" FontSize="13" TextColor="#32418c" VerticalOptions="Center" />
+                                <Entry Grid.Column="1" 
+                                       x:Name="entrySalary" 
+                                       Placeholder="450" 
+                                       Keyboard="Numeric" 
+                                       TextChanged="OnSalaryTextChanged"
+                                       TextColor="#1E293B" 
+                                       BackgroundColor="Transparent" 
+                                       FontFamily="MontserratRegular" 
+                                       FontSize="12.5" 
+                                       HeightRequest="40" />
+                            </Grid>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- Description -->
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Job Description &amp; Qualifications" FontFamily="MontserratSemiBold" FontSize="11" TextColor="#32418c" />
+                        <Border BackgroundColor="#F8FAFC" Stroke="#CBD5E1" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="10, 6">
+                            <Editor x:Name="editorDesc" Placeholder="Specify required tools, tasks, and internship duration..." TextColor="#1E293B" BackgroundColor="Transparent" FontFamily="MontserratRegular" FontSize="12" HeightRequest="100" AutoSize="TextChanges" />
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- Dynamic Submit Button -->
+                    <Button x:Name="btnSubmit" 
+                            Text="Publish to Student Feed" 
+                            FontFamily="MontserratBold" 
+                            FontSize="12" 
+                            BackgroundColor="#32418c" 
+                            TextColor="#FFFFFF" 
+                            CornerRadius="10" 
+                            HeightRequest="44" 
+                            Margin="0, 8, 0, 0" 
+                            Clicked="OnPublishClicked" />
+                </VerticalStackLayout>
+            </Border>
+        </ScrollView>
+    </Grid>
+</ContentPage>

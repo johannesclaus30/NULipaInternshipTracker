@@ -1,123 +1,66 @@
-﻿using NULipaInternshipTracker.ViewModels;
+﻿using NULipaInternshipTracker.Services;
+using NULipaInternshipTracker.ViewModels;
 
 namespace NULipaInternshipTracker;
 
 public partial class MainPage : ContentPage
 {
-    private InternshipViewModel? _vm;
-
+    private readonly InternshipViewModel _vm;
     public MainPage(InternshipViewModel vm)
     {
         InitializeComponent();
-        _vm = vm;
-        BindingContext = _vm;
-    }
-
-    public MainPage()
-    {
-        InitializeComponent();
-    }
-
-    protected override async void OnNavigatedTo(NavigatedToEventArgs args)
-    {
-        base.OnNavigatedTo(args);
-        await EnsureDataLoaded();
+        BindingContext = _vm = vm;
     }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await EnsureDataLoaded();
-    }
 
-    private async Task EnsureDataLoaded()
-    {
-        // If Shell created MainPage using the empty constructor, resolve the VM manually
-        if (_vm == null)
+        // Render current user photo / initials
+        var user = UserSession.CurrentUser;
+        if (user != null)
         {
-            _vm = Handler?.MauiContext?.Services.GetService<InternshipViewModel>()
-                  ?? IPlatformApplication.Current?.Services.GetService<InternshipViewModel>();
+            lblUserInitials.Text = user.Initials;
 
-            if (_vm != null)
+            if (user.HasProfilePicture)
             {
-                BindingContext = _vm;
+                imgUserProfile.Source = user.ProfileImageSource;
+                imgUserProfile.IsVisible = true;
+                lblUserInitials.IsVisible = false;
+            }
+            else
+            {
+                imgUserProfile.IsVisible = false;
+                lblUserInitials.IsVisible = true;
             }
         }
 
-        if (_vm != null)
-        {
-            await _vm.LoadDataAsync();
-        }
+        await _vm.LoadDataAsync();
     }
 
-    private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
-    {
-        _vm?.Filter(e.NewTextValue);
-    }
-
-    private async void OnBackToProfileClicked(object sender, EventArgs e)
-    {
-        // Navigates back to the WelcomePage
-        await Shell.Current.GoToAsync("..");
-    }
+    private void OnSearchTextChanged(object sender, TextChangedEventArgs e) => _vm.Filter(e.NewTextValue);
 
     private void OnFilterChipClicked(object sender, EventArgs e)
     {
-        if (sender is Button clickedBtn && clickedBtn.CommandParameter is string stage)
+        if (sender is Button btn && btn.Parent is HorizontalStackLayout parent)
         {
-            // Highlight selected button, un-highlight siblings
-            if (clickedBtn.Parent is HorizontalStackLayout stack)
+            foreach (var child in parent.Children.OfType<Button>())
             {
-                foreach (var child in stack.Children.OfType<Button>())
-                {
-                    child.BackgroundColor = Color.FromArgb("#FFFFFF");
-                    child.TextColor = Color.FromArgb("#475569");
-                }
-                clickedBtn.BackgroundColor = Color.FromArgb("#32418c");
-                clickedBtn.TextColor = Color.FromArgb("#FFFFFF");
+                child.BackgroundColor = Colors.White;
+                child.TextColor = Color.FromArgb("#475569");
+                child.BorderColor = Color.FromArgb("#E2E8F0");
             }
-
-            // Apply filter to ViewModel
-            _vm?.SetStageFilter(stage);
+            btn.BackgroundColor = Color.FromArgb("#32418c");
+            btn.TextColor = Colors.White;
+            btn.BorderColor = Color.FromArgb("#32418c");
+            _vm.SetFilter(btn.CommandParameter?.ToString() ?? "All");
         }
     }
 
-    // Inside MainPage.xaml.cs
+    private async void OnProfileClicked(object sender, EventArgs e) => await Shell.Current.GoToAsync("ProfilePage");
 
-    protected override void OnSizeAllocated(double width, double height)
+    private async void OnMyApplicationsClicked(object sender, EventArgs e)
     {
-        base.OnSizeAllocated(width, height);
-
-        if (ApplicationsCollection?.ItemsLayout is GridItemsLayout gridLayout)
-        {
-            // For standard phone width (< 500), keep it strictly 2 portrait cards per row
-            // On tablets or desktop windows (> 500), scale up to 3 or 4 columns so cards don't look stretched
-            if (width > 800)
-                gridLayout.Span = 4;
-            else if (width > 500)
-                gridLayout.Span = 3;
-            else
-                gridLayout.Span = 2;
-        }
-    }
-
-    private async void OnViewFullNotesClicked(object sender, EventArgs e)
-    {
-        if (sender is Button btn && btn.BindingContext is Models.JobApplication app)
-        {
-            if (!string.IsNullOrWhiteSpace(app.Notes))
-            {
-                await DisplayAlert(
-                    $"{app.CompanyName} — Notes",
-                    app.Notes,
-                    "Close"
-                );
-            }
-        }
-    }
-
-    private async void OnProfileClicked(object sender, EventArgs e)
-    {
-        await Shell.Current.GoToAsync("ProfilePage");
+        await Shell.Current.GoToAsync("MyApplicationsPage");
     }
 }

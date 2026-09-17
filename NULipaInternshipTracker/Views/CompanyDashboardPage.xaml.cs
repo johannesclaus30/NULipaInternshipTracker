@@ -6,6 +6,7 @@ namespace NULipaInternshipTracker.Views;
 public partial class CompanyDashboardPage : ContentPage
 {
     private readonly ApiService _api;
+    private List<JobPosting> _openings = new();
 
     public CompanyDashboardPage(ApiService api)
     {
@@ -16,55 +17,65 @@ public partial class CompanyDashboardPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        lblCompanyName.Text = UserSession.CurrentUser?.FullName ?? "Recruiter Portal";
-        await LoadApplicationsAsync();
+        await LoadDataAsync();
     }
 
-    private async void OnRefreshRequested(object sender, EventArgs e)
+    private async Task LoadDataAsync()
     {
-        await LoadApplicationsAsync();
-        refreshView.IsRefreshing = false;
-    }
-
-    private async Task LoadApplicationsAsync()
-    {
-        var list = await _api.GetApplicationsByRoleAsync();
-        collectionApplicants.ItemsSource = list;
-    }
-
-    private async void OnSetInterviewClicked(object sender, EventArgs e)
-    {
-        if (sender is Button btn && btn.CommandParameter is JobApplication app)
+        refreshView.IsRefreshing = true;
+        try
         {
-            bool ok = await _api.UpdateApplicationStageAsync(app.Id, "Interview");
-            if (ok) await LoadApplicationsAsync();
+            int compId = UserSession.CurrentUser?.CompanyId ?? 0;
+            if (compId > 0)
+            {
+                _openings = await _api.GetCompanyPostingsAsync(compId);
+                collectionOpenings.ItemsSource = _openings;
+
+                // Load all applicants for this company for dashboard analytics
+                var allApps = await _api.GetApplicationsByRoleAsync();
+
+                lblStatOpenings.Text = _openings.Count.ToString();
+                lblStatApplicants.Text = allApps.Count.ToString();
+                lblStatInterview.Text = allApps.Count(a => a.Stage == "Interview" || a.Stage == "For Interview").ToString();
+                lblStatHired.Text = allApps.Count(a => a.Stage == "Accepted").ToString();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Dashboard error: {ex.Message}");
+        }
+        finally
+        {
+            refreshView.IsRefreshing = false;
         }
     }
 
-    private async void OnSendOfferClicked(object sender, EventArgs e)
+    private async void OnRefreshRequested(object sender, EventArgs e) => await LoadDataAsync();
+
+    private async void OnManageOpeningClicked(object sender, EventArgs e)
     {
-        if (sender is Button btn && btn.CommandParameter is JobApplication app)
+        if (sender is Button btn && btn.CommandParameter is JobPosting posting)
         {
-            bool ok = await _api.UpdateApplicationStageAsync(app.Id, "Offer / MOA");
-            if (ok) await LoadApplicationsAsync();
+            await Navigation.PushAsync(new ManageOpeningPage(_api, posting));
         }
     }
 
-    private async void OnRejectClicked(object sender, EventArgs e)
+    private async void OnPostOpeningClicked(object sender, EventArgs e)
     {
-        if (sender is Button btn && btn.CommandParameter is JobApplication app)
-        {
-            bool confirm = await DisplayAlert("Reject Candidate", $"Mark application for {app.StudentName} as Rejected?", "Yes", "No");
-            if (!confirm) return;
-
-            bool ok = await _api.UpdateApplicationStageAsync(app.Id, "Rejected");
-            if (ok) await LoadApplicationsAsync();
-        }
+        await Navigation.PushAsync(new PostOpeningPage(_api));
     }
 
-    private void OnSignOutClicked(object sender, EventArgs e)
+    private async void OnCompanySettingsClicked(object sender, EventArgs e)
     {
+        await Navigation.PushAsync(new CompanyProfilePage(_api));
+    }
+
+    private async void OnSignOutClicked(object sender, EventArgs e)
+    {
+        bool confirm = await DisplayAlert("Sign Out", "Are you sure you want to sign out?", "Sign Out", "Cancel");
+        if (!confirm) return;
+
         UserSession.Clear();
-        Application.Current!.MainPage = new LoginPage(_api);
+        Microsoft.Maui.Controls.Application.Current!.MainPage = new LoginPage(_api);
     }
 }

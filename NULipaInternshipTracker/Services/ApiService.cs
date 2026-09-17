@@ -200,7 +200,7 @@ public class ApiService
         }
     }
 
-    public async Task<bool> UpdateProfileAsync(int userId, string fullName, string email, string? newPassword)
+    public async Task<User?> UpdateProfileAsync(int userId, string fullName, string email, string? newPassword, string? profilePictureBase64)
     {
         try
         {
@@ -209,16 +209,207 @@ public class ApiService
                 Id = userId,
                 FullName = fullName,
                 Email = email,
-                Password = string.IsNullOrWhiteSpace(newPassword) ? null : newPassword
+                Password = string.IsNullOrWhiteSpace(newPassword) ? null : newPassword,
+                ProfilePicture = profilePictureBase64
             });
 
             var content = new StringContent(payload, Encoding.UTF8, "application/json");
             var resp = await _client.PostAsync("auth/update_profile.php", content);
-            return resp.IsSuccessStatusCode;
+            if (!resp.IsSuccessStatusCode) return null;
+
+            var json = await resp.Content.ReadAsStringAsync();
+            using var doc = JsonDocument.Parse(json);
+            if (doc.RootElement.TryGetProperty("user", out var userElem))
+            {
+                return JsonSerializer.Deserialize<User>(userElem.GetRawText(), _opts);
+            }
+            return null;
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Profile update error: {ex.Message}");
+            return null;
+        }
+    }
+
+    public async Task<List<JobPosting>> GetJobPostingsAsync(int studentId)
+    {
+        try
+        {
+            var resp = await _client.GetAsync($"postings/get_all.php?student_id={studentId}");
+            if (!resp.IsSuccessStatusCode) return new();
+
+            var json = await resp.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<List<JobPosting>>(json, _opts) ?? new();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching postings: {ex.Message}");
+            return new();
+        }
+    }
+
+    public async Task<bool> ApplyToJobAsync(int jobPostingId, int studentId, string studentName, string coverNote)
+    {
+        try
+        {
+            var payload = JsonSerializer.Serialize(new
+            {
+                JobPostingId = jobPostingId,
+                StudentId = studentId,
+                StudentName = studentName,
+                CoverNote = coverNote
+            });
+
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+            var resp = await _client.PostAsync("postings/apply.php", content);
+            return resp.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error applying: {ex.Message}");
+            return false;
+        }
+    }
+
+    public async Task<bool> CreateJobPostingAsync(JobPosting posting)
+    {
+        try
+        {
+            var payload = JsonSerializer.Serialize(posting);
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+            var resp = await _client.PostAsync("postings/create.php", content);
+            return resp.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error creating posting: {ex.Message}");
+            return false;
+        }
+    }
+
+    public async Task<List<JobPosting>> GetCompanyPostingsAsync(int companyId)
+    {
+        try
+        {
+            var resp = await _client.GetAsync($"postings/get_by_company.php?company_id={companyId}");
+            if (!resp.IsSuccessStatusCode) return new();
+            var json = await resp.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<List<JobPosting>>(json, _opts) ?? new();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching company postings: {ex.Message}");
+            return new();
+        }
+    }
+
+    public async Task<bool> UpdateCompanyAndRecruiterAsync(int companyId, int userId, string companyName, string recruiterName, string email, string? password)
+    {
+        try
+        {
+            var payload = JsonSerializer.Serialize(new
+            {
+                CompanyId = companyId,
+                UserId = userId,
+                CompanyName = companyName,
+                RecruiterName = recruiterName,
+                Email = email,
+                Password = string.IsNullOrWhiteSpace(password) ? null : password
+            });
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+            var resp = await _client.PostAsync("companies/update_company.php", content);
+            return resp.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error updating company profile: {ex.Message}");
+            return false;
+        }
+    }
+
+    public async Task<Company?> GetCompanyByIdAsync(int id)
+    {
+        try
+        {
+            var resp = await _client.GetAsync($"companies/get_one.php?id={id}");
+            if (!resp.IsSuccessStatusCode) return null;
+            var json = await resp.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<Company>(json, _opts);
+        }
+        catch { return null; }
+    }
+
+    public async Task<bool> UpdatePostingAsync(int id, JobPosting posting)
+    {
+        try
+        {
+            var json = JsonSerializer.Serialize(posting);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var resp = await _client.PostAsync($"postings/update.php?id={id}", content);
+            return resp.IsSuccessStatusCode;
+        }
+        catch { return false; }
+    }
+
+    public async Task<bool> DeletePostingAsync(int id)
+    {
+        try
+        {
+            var resp = await _client.GetAsync($"postings/delete.php?id={id}");
+            return resp.IsSuccessStatusCode;
+        }
+        catch { return false; }
+    }
+
+    public async Task<List<JobApplication>> GetApplicantsForPostingAsync(int postingId)
+    {
+        try
+        {
+            var resp = await _client.GetAsync($"postings/get_one_with_applicants.php?id={postingId}");
+            if (!resp.IsSuccessStatusCode) return new();
+            var json = await resp.Content.ReadAsStringAsync();
+            using var doc = JsonDocument.Parse(json);
+            if (doc.RootElement.TryGetProperty("Applicants", out var appsElem))
+            {
+                return JsonSerializer.Deserialize<List<JobApplication>>(appsElem.GetRawText(), _opts) ?? new();
+            }
+            return new();
+        }
+        catch { return new(); }
+    }
+
+    public async Task<bool> UpdateCompanyProfileAsync(int companyId, int userId, string companyName, string? logoBase64, string recruiterName, string email, string? password)
+    {
+        try
+        {
+            var payload = JsonSerializer.Serialize(new
+            {
+                CompanyId = companyId,
+                UserId = userId,
+                CompanyName = companyName,
+                Logo = logoBase64,
+                RecruiterName = recruiterName,
+                Email = email,
+                Password = string.IsNullOrWhiteSpace(password) ? null : password
+            });
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+            var resp = await _client.PostAsync("companies/update_company.php", content);
+            return resp.IsSuccessStatusCode;
+        }
+        catch { return false; }
+    }
+
+    public async Task<bool> CancelApplicationAsync(int applicationId, int studentId)
+    {
+        try
+        {
+            var resp = await _client.DeleteAsync($"applications/cancel.php?id={applicationId}&student_id={studentId}");
+            return resp.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error canceling application: {ex.Message}");
             return false;
         }
     }

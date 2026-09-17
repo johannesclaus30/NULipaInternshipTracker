@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:NULipaInternshipTracker.Models"
+             x:Class="NULipaInternshipTracker.Views.ManageOpeningPage"
+             BackgroundColor="#F4F6F9"
+             NavigationPage.HasNavigationBar="False">
+
+    <Grid RowDefinitions="Auto, Auto, *" Padding="16, 18, 16, 12" RowSpacing="12">
+
+        <!-- Header -->
+        <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10" VerticalOptions="Center">
+            <Button Grid.Column="0" Text="←" FontFamily="MontserratBold" FontSize="18" TextColor="#32418c" BackgroundColor="Transparent" Padding="0" WidthRequest="32" Clicked="OnBackClicked" />
+            <VerticalStackLayout Grid.Column="1">
+                <Label x:Name="lblRoleTitle" Text="Job Details" FontFamily="MontserratBold" FontSize="18" TextColor="#32418c" LineBreakMode="TailTruncation" />
+                <Label x:Name="lblPostingMeta" Text="Setup • Salary" FontFamily="MontserratMedium" FontSize="9.5" TextColor="#64748B" />
+            </VerticalStackLayout>
+            <Button Grid.Column="2" Text="🗑️ Delete" FontFamily="MontserratBold" FontSize="10" TextColor="#DC2626" BackgroundColor="#FEE2E2" CornerRadius="8" HeightRequest="32" Padding="10, 0" Clicked="OnDeletePostingClicked" />
+        </Grid>
+
+        <!-- Segment Header -->
+        <Grid Grid.Row="1" ColumnDefinitions="*, Auto" VerticalOptions="Center">
+            <Label Text="Candidate Applicants" FontFamily="MontserratBold" FontSize="13" TextColor="#1E293B" VerticalOptions="Center" />
+            <Button Grid.Column="1" 
+            Text="Edit" 
+            FontFamily="MontserratSemiBold" 
+            FontSize="11" 
+            BackgroundColor="#FFFFFF" 
+            TextColor="#32418c" 
+            CornerRadius="8" 
+            HeightRequest="30" 
+            Padding="12, 0" 
+            Clicked="OnEditPostingClicked" />
+        </Grid>
+
+        <!-- Applicants for this Opening -->
+        <RefreshView Grid.Row="2" x:Name="refreshApplicants" Refreshing="OnRefreshRequested">
+            <CollectionView x:Name="collectionApplicants" SelectionMode="None">
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="6" Padding="0, 60, 0, 0">
+                        <Label Text="👥" FontSize="36" HorizontalOptions="Center" Opacity="0.5" />
+                        <Label Text="No students have applied to this role yet." FontFamily="MontserratSemiBold" FontSize="13" TextColor="#64748B" HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:JobApplication">
+                        <Border BackgroundColor="#FFFFFF" StrokeThickness="0" StrokeShape="RoundRectangle 14" Padding="12" Margin="0, 0, 0, 10">
+                            <Border.Shadow>
+                                <Shadow Brush="Black" Offset="0,3" Radius="8" Opacity="0.04" />
+                            </Border.Shadow>
+
+                            <Grid RowDefinitions="Auto, Auto, Auto" RowSpacing="8">
+                                <!-- Candidate Avatar + Info -->
+                                <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10" VerticalOptions="Center">
+                                    <!-- Circular Student Avatar -->
+                                    <Border Grid.Column="0" 
+                            HeightRequest="42" 
+                            WidthRequest="42" 
+                            StrokeShape="RoundRectangle 21" 
+                            BackgroundColor="#EEF2F6" 
+                            StrokeThickness="0">
+                                        <Grid>
+                                            <!-- Initials fallback -->
+                                            <Label Text="{Binding StudentInitials}" 
+                                   FontFamily="MontserratBold" 
+                                   FontSize="13" 
+                                   TextColor="#32418c" 
+                                   HorizontalOptions="Center" 
+                                   VerticalOptions="Center" 
+                                   IsVisible="{Binding HasNoStudentPhoto}" />
+
+                                            <!-- Real Photo -->
+                                            <Image Source="{Binding StudentPhotoSource}" 
+                                   Aspect="AspectFill" 
+                                   IsVisible="{Binding HasStudentPhoto}" />
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- Student Name & Applied Date -->
+                                    <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                                        <Label Text="{Binding StudentName, TargetNullValue='Applicant'}" FontFamily="MontserratBold" FontSize="13.5" TextColor="#1E293B" />
+                                        <Label Text="{Binding ApplicationDate, StringFormat='Applied: {0}'}" FontFamily="MontserratRegular" FontSize="8.5" TextColor="#94A3B8" />
+                                    </VerticalStackLayout>
+
+                                    <!-- Stage Pill -->
+                                    <Border Grid.Column="2" StrokeThickness="0" Padding="8, 3" StrokeShape="RoundRectangle 6" BackgroundColor="#EEF2F6" VerticalOptions="Start">
+                                        <Label Text="{Binding Stage}" FontFamily="MontserratBold" FontSize="9" TextColor="#32418c" />
+                                    </Border>
+                                </Grid>
+
+                                <!-- Student Notes -->
+                                <Border Grid.Row="1" BackgroundColor="#F8FAFC" Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="8, 6">
+                                    <Label Text="{Binding Notes, TargetNullValue='No student notes provided.'}" FontFamily="MontserratRegular" FontSize="9.5" TextColor="#64748B" />
+                                </Border>
+
+                                <!-- Action Pipeline -->
+                                <Grid Grid.Row="2" ColumnDefinitions="*, *, *" ColumnSpacing="6">
+                                    <Button Grid.Column="0" Text="Interview" FontFamily="MontserratSemiBold" FontSize="9.5" BackgroundColor="#32418c" TextColor="#FFFFFF" CornerRadius="8" HeightRequest="30" Padding="0" Clicked="OnSetInterviewClicked" CommandParameter="{Binding .}" />
+                                    <Button Grid.Column="1" Text="Send Offer" FontFamily="MontserratSemiBold" FontSize="9.5" BackgroundColor="#fbd117" TextColor="#32418c" CornerRadius="8" HeightRequest="30" Padding="0" Clicked="OnSendOfferClicked" CommandParameter="{Binding .}" />
+                                    <Button Grid.Column="2" Text="Reject" FontFamily="MontserratSemiBold" FontSize="9.5" BackgroundColor="#FEE2E2" TextColor="#DC2626" CornerRadius="8" HeightRequest="30" Padding="0" Clicked="OnRejectClicked" CommandParameter="{Binding .}" />
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+</ContentPage>

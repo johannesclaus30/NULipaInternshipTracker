@@ -41,7 +41,7 @@ public partial class LoginPage : ContentPage
 
         lblEmailTitle.Text = "Corporate Work Email";
         lblNameTitle.Text = "HR / Recruiter Full Name";
-        entryEmail.Placeholder = "recruiter@smprime.com";
+        entryEmail.Placeholder = "careers@nu-lipa.edu.ph";
         RefreshUIState();
     }
 
@@ -83,6 +83,7 @@ public partial class LoginPage : ContentPage
 
         if (_isRegistering)
         {
+            // ... (Existing Registration logic remains the same) ...
             string name = entryName.Text?.Trim() ?? string.Empty;
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -132,16 +133,37 @@ public partial class LoginPage : ContentPage
             var user = await _api.LoginAsync(email, pass);
             if (user == null)
             {
-                await DisplayAlert("Login Failed", "Invalid credentials.", "OK");
+                await DisplayAlert("Login Failed", "Invalid email or password.", "OK");
+                btnSubmit.IsEnabled = true;
+                return;
+            }
+
+            // 🔒 Enforce Tab Mode vs Account Role
+            if (_isStudentMode && user.Role != "Student")
+            {
+                await DisplayAlert(
+                    "Access Denied",
+                    "This account is not a Student account. Please enter valid account credentials. Only Student Accounts will be signed in.",
+                    "OK");
+                btnSubmit.IsEnabled = true;
+                return;
+            }
+
+            if (!_isStudentMode && user.Role == "Student")
+            {
+                await DisplayAlert(
+                    "Access Denied",
+                    "Invalid Account. Please enter valid account credentials. Only Company Accounts will be signed in.",
+                    "OK");
                 btnSubmit.IsEnabled = true;
                 return;
             }
 
             UserSession.CurrentUser = user;
 
+            // Route to the appropriate dashboard
             if (user.Role == "Student")
             {
-                // Route directly to the main tracking view
                 Application.Current!.MainPage = new AppShell();
             }
             else
@@ -152,4 +174,5 @@ public partial class LoginPage : ContentPage
 
         btnSubmit.IsEnabled = true;
     }
+
 }

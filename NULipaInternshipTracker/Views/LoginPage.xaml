@@ -13,40 +13,42 @@
                 StrokeThickness="0" 
                 Margin="0, 0, 0, -40"
                 StrokeShape="RoundRectangle 0, 0, 36, 36"
-                Padding="20, 36, 20, 60">
+                Padding="20, 90, 20, 200">
 
             <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
-                <Border WidthRequest="74" HeightRequest="74" 
-                        Stroke="#fbd117" StrokeThickness="3" 
+                <Border WidthRequest="84" HeightRequest="84" 
+                        Stroke="#fbd117" StrokeThickness="9" 
                         BackgroundColor="#FFFFFF" 
                         StrokeShape="RoundRectangle 37"
                         HorizontalOptions="Center">
                     <Label Text="🎓" FontSize="36" HorizontalOptions="Center" VerticalOptions="Center" />
                 </Border>
 
-                <Label Text="CAREER SERVICES" 
+                <Label Text="NU LIPA INTERNSHIP PORTAL" 
                        FontFamily="MontserratBold" 
                        FontSize="11" 
-                       TextColor="#fbd117" 
+                       TextColor="#fbd117"
+                       Margin="0,20,0,0"
                        CharacterSpacing="1.5" 
                        HorizontalOptions="Center" />
 
-                <Label Text="NU Lipa Portal" 
+                <Label Text="Student Internship Application Tracker" 
                        FontFamily="MontserratBold" 
                        FontSize="26" 
                        TextColor="#FFFFFF" 
                        HorizontalOptions="Center" />
 
-                <Label Text="BS Information Technology • Internship System" 
+                <Label Text="Industry Partnership and Internship Portal" 
                        FontFamily="MontserratMedium" 
                        FontSize="11" 
-                       TextColor="#D4E2EE" 
+                       TextColor="#D4E2EE"
+                       Margin="0,0,0,20"
                        HorizontalOptions="Center" />
             </VerticalStackLayout>
         </Border>
 
         <!-- Floating Form Card -->
-        <ScrollView Grid.Row="1" Margin="20, 0, 20, 20">
+        <ScrollView Grid.Row="1" Margin="20, -130, 20, 20">
             <VerticalStackLayout Spacing="16">
 
                 <Border BackgroundColor="#FFFFFF" 
@@ -172,15 +174,6 @@
                                 BackgroundColor="Transparent" 
                                 Clicked="OnToggleRegisterModeClicked" />
 
-                    </VerticalStackLayout>
-                </Border>
-
-                <!-- Demo helper -->
-                <Border BackgroundColor="#FEF9C3" Stroke="#FDE047" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="12, 10">
-                    <VerticalStackLayout Spacing="2">
-                        <Label Text="💡 Evaluation Accounts" FontFamily="MontserratBold" FontSize="10" TextColor="#854D0E" />
-                        <Label Text="Student: student@nulipa.edu.ph (student123)" FontFamily="MontserratRegular" FontSize="9" TextColor="#713F12" />
-                        <Label Text="Company: recruiter@smprime.com (smprime123)" FontFamily="MontserratRegular" FontSize="9" TextColor="#713F12" />
                     </VerticalStackLayout>
                 </Border>
 
