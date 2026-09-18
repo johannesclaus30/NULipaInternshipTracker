@@ -9,6 +9,8 @@ public class User
     public string Email { get; set; } = string.Empty;
     public string Role { get; set; } = "Student"; // "Student" or "CompanyAdmin"
     public int? CompanyId { get; set; }
+    public string? StudentNumber { get; set; }
+    public string? CompanyCode { get; set; }
     public string? ProfilePicture { get; set; } // Base64 encoded JPEG/PNG
 
     [JsonIgnore]

@@ -59,6 +59,13 @@
                         </Border>
                     </VerticalStackLayout>
 
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Student ID Number *" FontFamily="MontserratSemiBold" FontSize="11" TextColor="#32418c" />
+                        <Border BackgroundColor="#F8FAFC" Stroke="#CBD5E1" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="10, 0">
+                            <Entry x:Name="entryStudentId" Placeholder="e.g. 2023-100234" TextColor="#1E293B" BackgroundColor="Transparent" FontFamily="MontserratRegular" FontSize="12.5" HeightRequest="40" />
+                        </Border>
+                    </VerticalStackLayout>
+
                     <!-- Password -->
                     <VerticalStackLayout Spacing="4">
                         <Label Text="New Password (leave blank to keep current)" FontFamily="MontserratSemiBold" FontSize="11" TextColor="#32418c" />

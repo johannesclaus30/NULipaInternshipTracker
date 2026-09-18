@@ -7,4 +7,5 @@ public class Company
     public string? Logo { get; set; }
     public string? Industry { get; set; }
     public string? Address { get; set; }
+    public string? CompanyCode { get; set; }
 }

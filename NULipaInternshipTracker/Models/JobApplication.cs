@@ -38,9 +38,38 @@ public class JobApplication : INotifyPropertyChanged
     public string ApplicationDate { get; set; } = DateTime.Now.ToString("yyyy-MM-dd");
     public string? Notes { get; set; }
     public string? CompanyLogo { get; set; }
-    public string? StudentPhoto { get; set; } // Joined from users table
+    public string? CompanyEmail { get; set; }
+    public string? StudentPhoto { get; set; }
+    public string? InterviewDate { get; set; }
+    public string? InterviewTime { get; set; }
+    public string? InterviewLocation { get; set; }
+    public string? InterviewNotes { get; set; }
+    public string? RejectionReason { get; set; }
 
     // UI Computed Properties
+    [JsonIgnore]
+    public bool IsInInterviewStage => !string.IsNullOrEmpty(Stage) &&
+    (Stage.Equals("Interview", StringComparison.OrdinalIgnoreCase) ||
+     Stage.Equals("For Interview", StringComparison.OrdinalIgnoreCase));
+
+    [JsonIgnore]
+    public bool IsWaitlistedStage => !string.IsNullOrEmpty(Stage) &&
+        (Stage.Equals("Waitlisted", StringComparison.OrdinalIgnoreCase) ||
+         Stage.Equals("On Hold", StringComparison.OrdinalIgnoreCase));
+
+    [JsonIgnore]
+    public bool IsInterviewStage => !string.IsNullOrEmpty(Stage) &&
+    (Stage.Equals("Interview", StringComparison.OrdinalIgnoreCase) ||
+     Stage.Equals("For Interview", StringComparison.OrdinalIgnoreCase));
+
+    [JsonIgnore]
+    public bool IsRejectedStage => !string.IsNullOrEmpty(Stage) &&
+        Stage.Equals("Rejected", StringComparison.OrdinalIgnoreCase);
+
+    [JsonIgnore]
+    public bool HasInterviewDetails => !string.IsNullOrWhiteSpace(InterviewDate) ||
+                                       !string.IsNullOrWhiteSpace(InterviewLocation);
+
     [JsonIgnore]
     public bool IsOfferStage => !string.IsNullOrEmpty(Stage) &&
                                 (Stage.Equals("Offer / MOA", StringComparison.OrdinalIgnoreCase) ||
@@ -69,6 +98,18 @@ public class JobApplication : INotifyPropertyChanged
             }
         }
     }
+
+    [JsonIgnore]
+    public bool IsAccepted => !string.IsNullOrEmpty(Stage) &&
+    Stage.Equals("Accepted", StringComparison.OrdinalIgnoreCase);
+
+    [JsonIgnore]
+    public bool IsSettled => !string.IsNullOrEmpty(Stage) &&
+        (Stage.Equals("Accepted", StringComparison.OrdinalIgnoreCase) ||
+         Stage.Equals("Rejected", StringComparison.OrdinalIgnoreCase));
+
+    [JsonIgnore]
+    public bool CanManageStage => !IsSettled;
 
     [JsonIgnore]
     public bool HasStudentPhoto => !string.IsNullOrWhiteSpace(StudentPhoto);

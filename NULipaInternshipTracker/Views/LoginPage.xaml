@@ -89,7 +89,7 @@
 
                         <!-- Company Name (Company Sign-Up Only) -->
                         <VerticalStackLayout x:Name="layoutCompanyName" Spacing="4" IsVisible="False">
-                            <Label Text="Registered Company Name" FontFamily="MontserratSemiBold" FontSize="11" TextColor="#32418c" />
+                            <Label Text="Registered Company Name *" FontFamily="MontserratSemiBold" FontSize="11" TextColor="#32418c" />
                             <Border BackgroundColor="#F8FAFC" Stroke="#CBD5E1" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="12, 0">
                                 <Entry x:Name="entryCompanyName" 
                                        Placeholder="e.g. SM Prime Holdings, Inc." 
@@ -102,9 +102,39 @@
                             </Border>
                         </VerticalStackLayout>
 
+                        <!-- Company ID / Code (Company Sign-Up Only) -->
+                        <VerticalStackLayout x:Name="layoutCompanyCode" Spacing="4" IsVisible="False">
+                            <Label Text="Company ID / Reference Code *" FontFamily="MontserratSemiBold" FontSize="11" TextColor="#32418c" />
+                            <Border BackgroundColor="#F8FAFC" Stroke="#CBD5E1" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="12, 0">
+                                <Entry x:Name="entryCompanyCode" 
+                                       Placeholder="e.g. COMP-101" 
+                                       PlaceholderColor="#94A3B8" 
+                                       BackgroundColor="Transparent" 
+                                       FontFamily="MontserratRegular" 
+                                       FontSize="13" 
+                                       TextColor="#1E293B" 
+                                       HeightRequest="42" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Student ID Number (Student Sign-Up Only) -->
+                        <VerticalStackLayout x:Name="layoutStudentId" Spacing="4" IsVisible="False">
+                            <Label Text="Student ID Number *" FontFamily="MontserratSemiBold" FontSize="11" TextColor="#32418c" />
+                            <Border BackgroundColor="#F8FAFC" Stroke="#CBD5E1" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="12, 0">
+                                <Entry x:Name="entryStudentId" 
+                                       Placeholder="e.g. 2023-100234" 
+                                       PlaceholderColor="#94A3B8" 
+                                       BackgroundColor="Transparent" 
+                                       FontFamily="MontserratRegular" 
+                                       FontSize="13" 
+                                       TextColor="#1E293B" 
+                                       HeightRequest="42" />
+                            </Border>
+                        </VerticalStackLayout>
+
                         <!-- Name Field (Visible on Register) -->
                         <VerticalStackLayout x:Name="layoutName" Spacing="4" IsVisible="False">
-                            <Label x:Name="lblNameTitle" Text="Full Name" FontFamily="MontserratSemiBold" FontSize="11" TextColor="#32418c" />
+                            <Label x:Name="lblNameTitle" Text="Full Name *" FontFamily="MontserratSemiBold" FontSize="11" TextColor="#32418c" />
                             <Border BackgroundColor="#F8FAFC" Stroke="#CBD5E1" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="12, 0">
                                 <Entry x:Name="entryName" 
                                        Placeholder="e.g. Juan Dela Cruz" 
@@ -119,7 +149,7 @@
 
                         <!-- Email Field -->
                         <VerticalStackLayout Spacing="4">
-                            <Label x:Name="lblEmailTitle" Text="Student Email" FontFamily="MontserratSemiBold" FontSize="11" TextColor="#32418c" />
+                            <Label x:Name="lblEmailTitle" Text="Student Email *" FontFamily="MontserratSemiBold" FontSize="11" TextColor="#32418c" />
                             <Border BackgroundColor="#F8FAFC" Stroke="#CBD5E1" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="12, 0">
                                 <Entry x:Name="entryEmail" 
                                        Placeholder="student@nulipa.edu.ph" 
@@ -135,7 +165,7 @@
 
                         <!-- Password Field -->
                         <VerticalStackLayout Spacing="4">
-                            <Label Text="Password" FontFamily="MontserratSemiBold" FontSize="11" TextColor="#32418c" />
+                            <Label Text="Password *" FontFamily="MontserratSemiBold" FontSize="11" TextColor="#32418c" />
                             <Border BackgroundColor="#F8FAFC" Stroke="#CBD5E1" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="12, 0">
                                 <Entry x:Name="entryPassword" 
                                        IsPassword="True" 
@@ -147,6 +177,15 @@
                                        TextColor="#1E293B" 
                                        HeightRequest="42" />
                             </Border>
+                            <Button x:Name="btnForgotPassword"
+                                    Text="Forgot Password?"
+                                    FontFamily="MontserratSemiBold"
+                                    FontSize="11"
+                                    TextColor="#32418c"
+                                    BackgroundColor="Transparent"
+                                    HorizontalOptions="End"
+                                    Padding="0"
+                                    Clicked="OnForgotPasswordClicked" />
                         </VerticalStackLayout>
 
                         <!-- Submit Action Button -->

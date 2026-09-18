@@ -24,6 +24,7 @@ public partial class ProfilePage : ContentPage
             entryName.Text = user.FullName;
             entryEmail.Text = user.Email;
             entryPassword.Text = string.Empty;
+            entryStudentId.Text = user.StudentNumber ?? string.Empty;
 
             _base64ProfilePhoto = user.ProfilePicture;
             RenderAvatar(_base64ProfilePhoto);
@@ -95,6 +96,7 @@ public partial class ProfilePage : ContentPage
         string name = entryName.Text?.Trim() ?? string.Empty;
         string email = entryEmail.Text?.Trim() ?? string.Empty;
         string pass = entryPassword.Text?.Trim() ?? string.Empty;
+        string studentId = entryStudentId.Text?.Trim() ?? string.Empty;
 
         if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(email))
         {
@@ -102,7 +104,7 @@ public partial class ProfilePage : ContentPage
             return;
         }
 
-        var updatedUser = await _api.UpdateProfileAsync(user.Id, name, email, pass, _base64ProfilePhoto);
+        var updatedUser = await _api.UpdateProfileAsync(user.Id, name, email, studentId, pass, _base64ProfilePhoto);
         if (updatedUser != null)
         {
             UserSession.CurrentUser = updatedUser;

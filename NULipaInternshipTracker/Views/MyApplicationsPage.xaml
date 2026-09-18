@@ -76,12 +76,13 @@
             </Grid>
         </Border>
 
-        <!-- 3. Stage Filter Chips (All, Applied, For Interview, Offer / MOA, Accepted, Rejected) -->
+        <!-- 3. Stage Filter Chips -->
         <ScrollView Grid.Row="3" Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
             <HorizontalStackLayout Spacing="8">
                 <Button Text="All" Clicked="OnFilterChipClicked" CommandParameter="All" FontFamily="MontserratSemiBold" FontSize="11" CornerRadius="20" HeightRequest="32" Padding="14,0" BackgroundColor="#32418c" TextColor="#FFFFFF" BorderWidth="1" BorderColor="#32418c"/>
                 <Button Text="Applied" Clicked="OnFilterChipClicked" CommandParameter="Applied" FontFamily="MontserratSemiBold" FontSize="11" CornerRadius="20" HeightRequest="32" Padding="14,0" BackgroundColor="#FFFFFF" TextColor="#475569" BorderWidth="1" BorderColor="#E2E8F0"/>
                 <Button Text="For Interview" Clicked="OnFilterChipClicked" CommandParameter="For Interview" FontFamily="MontserratSemiBold" FontSize="11" CornerRadius="20" HeightRequest="32" Padding="14,0" BackgroundColor="#FFFFFF" TextColor="#475569" BorderWidth="1" BorderColor="#E2E8F0"/>
+                <Button Text="Waitlisted" Clicked="OnFilterChipClicked" CommandParameter="Waitlisted" FontFamily="MontserratSemiBold" FontSize="11" CornerRadius="20" HeightRequest="32" Padding="14,0" BackgroundColor="#FFFFFF" TextColor="#475569" BorderWidth="1" BorderColor="#E2E8F0"/>
                 <Button Text="Offer / MOA" Clicked="OnFilterChipClicked" CommandParameter="Offer / MOA" FontFamily="MontserratSemiBold" FontSize="11" CornerRadius="20" HeightRequest="32" Padding="14,0" BackgroundColor="#FFFFFF" TextColor="#475569" BorderWidth="1" BorderColor="#E2E8F0"/>
                 <Button Text="Accepted" Clicked="OnFilterChipClicked" CommandParameter="Accepted" FontFamily="MontserratSemiBold" FontSize="11" CornerRadius="20" HeightRequest="32" Padding="14,0" BackgroundColor="#FFFFFF" TextColor="#475569" BorderWidth="1" BorderColor="#E2E8F0"/>
                 <Button Text="Rejected" Clicked="OnFilterChipClicked" CommandParameter="Rejected" FontFamily="MontserratSemiBold" FontSize="11" CornerRadius="20" HeightRequest="32" Padding="14,0" BackgroundColor="#FFFFFF" TextColor="#475569" BorderWidth="1" BorderColor="#E2E8F0"/>
@@ -142,9 +143,10 @@
                                     <Label Text="{Binding Notes, TargetNullValue='Application submitted'}" FontFamily="MontserratRegular" FontSize="8.5" TextColor="#64748B" MaxLines="1" LineBreakMode="TailTruncation" VerticalOptions="Center"/>
                                 </Border>
 
-                                <!-- Row 4: Action Area -->
+                                <!-- Row 4: Action Area with Info Button -->
                                 <Grid Grid.Row="4" ColumnSpacing="6" Margin="0, 2, 0, 0">
-                                    <!-- Layout when in Offer Stage: [ Accept (2*) ] [ Withdraw (1*) ] -->
+
+                                    <!-- Case 1: Offer Stage -->
                                     <Grid ColumnDefinitions="2*, *" ColumnSpacing="6" IsVisible="{Binding IsOfferStage}">
                                         <Button Grid.Column="0" 
                                                 Text="✓ Accept Offer" 
@@ -156,7 +158,7 @@
                                                 HeightRequest="30" 
                                                 Padding="0" 
                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AcceptOfferCommand}" 
-                                                CommandParameter="{Binding .}"/>                        
+                                                CommandParameter="{Binding .}"/>
 
                                         <Button Grid.Column="1" 
                                                 Text="Withdraw" 
@@ -171,8 +173,8 @@
                                                 CommandParameter="{Binding .}"/>
                                     </Grid>
 
-                                    <!-- Layout when NOT in Offer Stage: [ Status Pill (2*) ] [ Withdraw (1*) ] -->
-                                    <Grid ColumnDefinitions="2*, *" ColumnSpacing="6">
+                                    <!-- Case 2: Non-Offer Stages -->
+                                    <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="6">
                                         <Grid.Triggers>
                                             <DataTrigger TargetType="Grid" Binding="{Binding IsOfferStage}" Value="True">
                                                 <Setter Property="IsVisible" Value="False" />
@@ -196,6 +198,9 @@
                                                 <DataTrigger TargetType="Border" Binding="{Binding Stage}" Value="Interview">
                                                     <Setter Property="BackgroundColor" Value="#FEF9C3"/>
                                                 </DataTrigger>
+                                                <DataTrigger TargetType="Border" Binding="{Binding Stage}" Value="Waitlisted">
+                                                    <Setter Property="BackgroundColor" Value="#FEF3C7"/>
+                                                </DataTrigger>
                                                 <DataTrigger TargetType="Border" Binding="{Binding Stage}" Value="Rejected">
                                                     <Setter Property="BackgroundColor" Value="#FEE2E2"/>
                                                 </DataTrigger>
@@ -203,6 +208,7 @@
                                                     <Setter Property="BackgroundColor" Value="#D1FAE5"/>
                                                 </DataTrigger>
                                             </Border.Triggers>
+
                                             <Label Text="{Binding Stage}" FontFamily="MontserratBold" FontSize="9.5" HorizontalOptions="Center" VerticalOptions="Center">
                                                 <Label.Triggers>
                                                     <DataTrigger TargetType="Label" Binding="{Binding Stage}" Value="Applied">
@@ -214,6 +220,9 @@
                                                     <DataTrigger TargetType="Label" Binding="{Binding Stage}" Value="Interview">
                                                         <Setter Property="TextColor" Value="#854D0E"/>
                                                     </DataTrigger>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding Stage}" Value="Waitlisted">
+                                                        <Setter Property="TextColor" Value="#D97706"/>
+                                                    </DataTrigger>
                                                     <DataTrigger TargetType="Label" Binding="{Binding Stage}" Value="Rejected">
                                                         <Setter Property="TextColor" Value="#991B1B"/>
                                                     </DataTrigger>
@@ -224,8 +233,30 @@
                                             </Label>
                                         </Border>
 
-                                        <!-- Withdraw Button -->
+                                        <!-- Interview Details / Waitlist / Feedback Info Button -->
                                         <Button Grid.Column="1" 
+                                                Text="ℹ Details" 
+                                                FontFamily="MontserratBold" 
+                                                FontSize="9" 
+                                                BackgroundColor="#EEF2F6" 
+                                                TextColor="#32418c" 
+                                                CornerRadius="8" 
+                                                HeightRequest="30" 
+                                                Padding="8, 0"
+                                                Clicked="OnApplicationDetailsClicked"
+                                                CommandParameter="{Binding .}">
+                                            <Button.Triggers>
+                                                <DataTrigger TargetType="Button" Binding="{Binding Stage}" Value="Applied">
+                                                    <Setter Property="IsVisible" Value="False" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Button" Binding="{Binding Stage}" Value="Accepted">
+                                                    <Setter Property="IsVisible" Value="False" />
+                                                </DataTrigger>
+                                            </Button.Triggers>
+                                        </Button>
+
+                                        <!-- Withdraw Button -->
+                                        <Button Grid.Column="2" 
                                                 Text="Withdraw" 
                                                 FontFamily="MontserratSemiBold" 
                                                 FontSize="9" 
@@ -235,7 +266,7 @@
                                                 BorderWidth="1" 
                                                 CornerRadius="8" 
                                                 HeightRequest="30" 
-                                                Padding="0" 
+                                                Padding="8, 0" 
                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CancelApplicationCommand}" 
                                                 CommandParameter="{Binding .}"/>
                                     </Grid>

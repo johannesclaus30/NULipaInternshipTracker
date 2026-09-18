@@ -24,6 +24,7 @@ public partial class CompanyProfilePage : ContentPage
         {
             entryRecruiterName.Text = user.FullName;
             entryEmail.Text = user.Email;
+            entryCompanyCode.Text = _company?.CompanyCode ?? user.CompanyCode ?? string.Empty;
 
             // Load saved company entity data from MySQL
             if (user.CompanyId.HasValue)
@@ -122,6 +123,7 @@ public partial class CompanyProfilePage : ContentPage
         string rName = entryRecruiterName.Text?.Trim() ?? string.Empty;
         string email = entryEmail.Text?.Trim() ?? string.Empty;
         string pass = entryPassword.Text?.Trim() ?? string.Empty;
+        string cCode = entryCompanyCode.Text?.Trim() ?? string.Empty;
 
         if (string.IsNullOrWhiteSpace(cName) || string.IsNullOrWhiteSpace(rName) || string.IsNullOrWhiteSpace(email))
         {
@@ -130,12 +132,13 @@ public partial class CompanyProfilePage : ContentPage
         }
 
         int compId = user.CompanyId ?? 0;
-        bool ok = await _api.UpdateCompanyProfileAsync(compId, user.Id, cName, _base64Logo, rName, email, pass);
+        bool ok = await _api.UpdateCompanyProfileAsync(compId, user.Id, cName, cCode, _base64Logo, rName, email, pass);
 
         if (ok)
         {
             user.FullName = rName;
             user.Email = email;
+            user.CompanyCode = cCode;
             await DisplayAlert("Success", "Settings and company logo updated successfully!", "OK");
             await Navigation.PopAsync();
         }

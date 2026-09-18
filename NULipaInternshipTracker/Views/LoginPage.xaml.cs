@@ -1,3 +1,4 @@
+using NULipaInternshipTracker.Models;
 using NULipaInternshipTracker.Services;
 
 namespace NULipaInternshipTracker.Views;
@@ -5,174 +6,164 @@ namespace NULipaInternshipTracker.Views;
 public partial class LoginPage : ContentPage
 {
     private readonly ApiService _api;
-    private bool _isStudentMode = true;
-    private bool _isRegistering = false;
+    private bool _isRegisterMode = false;
+    private bool _isStudentRole = true;
 
     public LoginPage(ApiService api)
     {
         InitializeComponent();
         _api = api;
+        UpdateViewMode();
     }
 
     private void OnStudentTabClicked(object sender, EventArgs e)
     {
-        _isStudentMode = true;
+        _isStudentRole = true;
         btnTabStudent.BackgroundColor = Color.FromArgb("#32418c");
         btnTabStudent.TextColor = Colors.White;
-
         btnTabAdmin.BackgroundColor = Colors.Transparent;
         btnTabAdmin.TextColor = Color.FromArgb("#64748B");
 
-        lblEmailTitle.Text = "Student Email";
-        lblNameTitle.Text = "Full Name";
+        lblEmailTitle.Text = "Student Email *";
         entryEmail.Placeholder = "student@nulipa.edu.ph";
-        layoutCompanyName.IsVisible = false;
-        RefreshUIState();
+        lblNameTitle.Text = "Full Name *";
+        UpdateViewMode();
     }
 
     private void OnAdminTabClicked(object sender, EventArgs e)
     {
-        _isStudentMode = false;
+        _isStudentRole = false;
         btnTabAdmin.BackgroundColor = Color.FromArgb("#32418c");
         btnTabAdmin.TextColor = Colors.White;
-
         btnTabStudent.BackgroundColor = Colors.Transparent;
         btnTabStudent.TextColor = Color.FromArgb("#64748B");
 
-        lblEmailTitle.Text = "Corporate Work Email";
-        lblNameTitle.Text = "HR / Recruiter Full Name";
-        entryEmail.Placeholder = "careers@nu-lipa.edu.ph";
-        RefreshUIState();
+        lblEmailTitle.Text = "Corporate Work Email *";
+        entryEmail.Placeholder = "recruiter@company.com";
+        lblNameTitle.Text = "Recruiter Full Name *";
+        UpdateViewMode();
     }
 
     private void OnToggleRegisterModeClicked(object sender, EventArgs e)
     {
-        _isRegistering = !_isRegistering;
-        RefreshUIState();
+        _isRegisterMode = !_isRegisterMode;
+        UpdateViewMode();
     }
 
-    private void RefreshUIState()
+    private void UpdateViewMode()
     {
-        layoutName.IsVisible = _isRegistering;
-        layoutCompanyName.IsVisible = _isRegistering && !_isStudentMode;
-
-        if (_isRegistering)
+        if (_isRegisterMode)
         {
-            btnSubmit.Text = _isStudentMode ? "Create Student Account" : "Register Partner Company";
-            btnToggleRegister.Text = "Already have an account? Sign in";
+            btnSubmit.Text = "Create Account";
+            btnToggleRegister.Text = "Already have an account? Sign in here";
+            btnForgotPassword.IsVisible = false;
+
+            layoutName.IsVisible = true;
+            layoutStudentId.IsVisible = _isStudentRole;
+            layoutCompanyName.IsVisible = !_isStudentRole;
+            layoutCompanyCode.IsVisible = !_isStudentRole;
         }
         else
         {
             btnSubmit.Text = "Sign In";
-            btnToggleRegister.Text = _isStudentMode ? "Need an account? Register here" : "Register new company account";
+            btnToggleRegister.Text = "Need an account? Register here";
+            btnForgotPassword.IsVisible = true;
+
+            layoutName.IsVisible = false;
+            layoutStudentId.IsVisible = false;
+            layoutCompanyName.IsVisible = false;
+            layoutCompanyCode.IsVisible = false;
         }
     }
 
     private async void OnSubmitClicked(object sender, EventArgs e)
     {
         string email = entryEmail.Text?.Trim() ?? string.Empty;
-        string pass = entryPassword.Text?.Trim() ?? string.Empty;
+        string password = entryPassword.Text?.Trim() ?? string.Empty;
 
-        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(pass))
+        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
         {
-            await DisplayAlert("Required", "Please provide both email and password.", "OK");
+            await DisplayAlert("Validation", "Email and Password are required.", "OK");
             return;
         }
 
-        btnSubmit.IsEnabled = false;
-
-        if (_isRegistering)
+        if (_isRegisterMode)
         {
-            // ... (Existing Registration logic remains the same) ...
             string name = entryName.Text?.Trim() ?? string.Empty;
             if (string.IsNullOrWhiteSpace(name))
             {
-                await DisplayAlert("Required", "Please provide your full name.", "OK");
-                btnSubmit.IsEnabled = true;
+                await DisplayAlert("Validation", "Full name is required.", "OK");
                 return;
             }
 
-            if (_isStudentMode)
+            if (_isStudentRole)
             {
-                var registered = await _api.RegisterAsync(name, email, pass);
-                if (registered != null)
+                string studentId = entryStudentId.Text?.Trim() ?? string.Empty;
+                if (string.IsNullOrWhiteSpace(studentId))
                 {
-                    UserSession.CurrentUser = registered;
+                    await DisplayAlert("Validation", "Student ID number is required.", "OK");
+                    return;
+                }
+
+                var studentUser = await _api.RegisterStudentAsync(name, email, password, studentId);
+                if (studentUser != null)
+                {
+                    UserSession.CurrentUser = studentUser;
                     Application.Current!.MainPage = new AppShell();
                 }
                 else
                 {
-                    await DisplayAlert("Registration Failed", "Email may already be registered.", "OK");
+                    await DisplayAlert("Registration Failed", "Could not create account. Email may already be taken.", "OK");
                 }
             }
-            else
+            else // Company Host
             {
                 string companyName = entryCompanyName.Text?.Trim() ?? string.Empty;
-                if (string.IsNullOrWhiteSpace(companyName))
+                string companyCode = entryCompanyCode.Text?.Trim() ?? string.Empty;
+
+                if (string.IsNullOrWhiteSpace(companyName) || string.IsNullOrWhiteSpace(companyCode))
                 {
-                    await DisplayAlert("Required", "Please provide the registered company name.", "OK");
-                    btnSubmit.IsEnabled = true;
+                    await DisplayAlert("Validation", "Company Name and Company ID are required.", "OK");
                     return;
                 }
 
-                var companyUser = await _api.RegisterCompanyAsync(companyName, name, email, pass);
+                var companyUser = await _api.RegisterCompanyAsync(companyName, companyCode, name, email, password);
                 if (companyUser != null)
                 {
                     UserSession.CurrentUser = companyUser;
-                    await DisplayAlert("Success", $"Company profile and recruiter account registered for {companyName}.", "Continue");
                     Application.Current!.MainPage = new NavigationPage(new CompanyDashboardPage(_api));
                 }
                 else
                 {
-                    await DisplayAlert("Registration Failed", "Failed to register company. Email might already exist.", "OK");
+                    await DisplayAlert("Registration Failed", "Could not register company account.", "OK");
                 }
             }
         }
-        else
+        else // Sign In Mode
         {
-            var user = await _api.LoginAsync(email, pass);
-            if (user == null)
+            var user = await _api.LoginAsync(email, password);
+            if (user != null)
             {
-                await DisplayAlert("Login Failed", "Invalid email or password.", "OK");
-                btnSubmit.IsEnabled = true;
-                return;
-            }
+                UserSession.CurrentUser = user;
 
-            // 🔒 Enforce Tab Mode vs Account Role
-            if (_isStudentMode && user.Role != "Student")
-            {
-                await DisplayAlert(
-                    "Access Denied",
-                    "This account is not a Student account. Please enter valid account credentials. Only Student Accounts will be signed in.",
-                    "OK");
-                btnSubmit.IsEnabled = true;
-                return;
-            }
-
-            if (!_isStudentMode && user.Role == "Student")
-            {
-                await DisplayAlert(
-                    "Access Denied",
-                    "Invalid Account. Please enter valid account credentials. Only Company Accounts will be signed in.",
-                    "OK");
-                btnSubmit.IsEnabled = true;
-                return;
-            }
-
-            UserSession.CurrentUser = user;
-
-            // Route to the appropriate dashboard
-            if (user.Role == "Student")
-            {
-                Application.Current!.MainPage = new AppShell();
+                if (user.Role.Equals("Student", StringComparison.OrdinalIgnoreCase))
+                {
+                    Application.Current!.MainPage = new AppShell();
+                }
+                else
+                {
+                    Application.Current!.MainPage = new NavigationPage(new CompanyDashboardPage(_api));
+                }
             }
             else
             {
-                Application.Current!.MainPage = new NavigationPage(new CompanyDashboardPage(_api));
+                await DisplayAlert("Sign In Failed", "Invalid email or password.", "OK");
             }
         }
-
-        btnSubmit.IsEnabled = true;
     }
 
+    private async void OnForgotPasswordClicked(object sender, EventArgs e)
+    {
+        await Navigation.PushModalAsync(new ForgotPasswordPage(_api));
+    }
 }

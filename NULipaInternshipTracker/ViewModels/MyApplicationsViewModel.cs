@@ -172,7 +172,14 @@ public class MyApplicationsViewModel : INotifyPropertyChanged
 
         if (item.Stage.Equals("Accepted", StringComparison.OrdinalIgnoreCase))
         {
-            await Application.Current!.MainPage!.DisplayAlert("Notice", "You have already accepted this offer. Please contact the company recruiter directly if you need to withdraw.", "OK");
+            string contact = !string.IsNullOrWhiteSpace(item.CompanyEmail)
+                ? $"via email at {item.CompanyEmail}"
+                : "directly";
+
+            await Application.Current!.MainPage!.DisplayAlert(
+                "Notice",
+                $"You have already accepted this offer. Please contact the {item.CompanyName} recruiter {contact} if you need to coordinate or withdraw your application.",
+                "OK");
             return;
         }
 
@@ -195,4 +202,5 @@ public class MyApplicationsViewModel : INotifyPropertyChanged
             await Application.Current.MainPage.DisplayAlert("Error", "Could not cancel application.", "OK");
         }
     }
+
 }
